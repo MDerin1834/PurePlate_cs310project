@@ -1,130 +1,170 @@
-🍽️ PurePlate: A Personalized Recipe Recommendation App
-Team Members
+# 🍽️ PurePlate: Personalized Recipe Recommendation App
 
-Mustafa Derin (32272) – Integration & Repository Lead
+### Developed by:
+**Mustafa Derin (32272)** | **Simay Otlaca (30804)** | **Ali Berkay Şahin (33996)**  
+**Elif Defne Çelik (32233)** | **Ceren Şenol (33914)** | **Ahmet Mert Kara (32443)**
 
-Simay Otlaca (30804) – Documentation & Submission Lead
+---
 
-Ali Berkay Şahin (33996) – Project Coordinator
+## 📖 Project Overview
 
-Elif Defne Çelik (32233) – Presentation & Communication Lead
+**PurePlate** is a mobile application that helps users **track their daily calorie intake** and receive **personalized recipe suggestions** based on:
+- Remaining calorie budget  
+- Available ingredients  
+- Preferred preparation time  
 
-Ceren Şenol (33914) – Learning & Research Lead
+With its **dynamic calorie visualization ring**, users receive instant visual feedback about how each recipe fits within their calorie goals — making healthy eating easier, faster, and waste-free.
 
-Ahmet Mert Kara (32443) – Testing & Quality Assurance Lead
+---
 
-🧩 Project Overview
+## 🎯 Problem & Solution
 
-PurePlate is a mobile application that helps users track their daily calorie intake and receive personalized recipe recommendations dynamically filtered based on:
+### ❌ The Problem
+In today’s fast-paced world, individuals struggle to:
+- Find recipes that match their **nutritional goals**,  
+- Fit their **limited time**, and  
+- Utilize **ingredients they already have** at home.  
 
-Remaining daily calorie budget
+This often leads to wasted food, time, and failed diet adherence.
 
-Available ingredients at home
+### ✅ The Solution
+**PurePlate** combines **three essential filters** — calories, time, and ingredients — to provide recipes that perfectly fit user constraints.  
+It dynamically visualizes calorie usage, helping users stay on track while minimizing waste and cooking effort.
 
-Preferred preparation time
+---
 
-It also includes a Dynamic Calorie Visualization Ring that provides immediate visual feedback, helping users plan meals that are healthy, quick, and waste-reducing.
+## 👥 Team Roles
 
-🎯 Problem Statement
+| Member | Role |
+|--------|------|
+| **Mustafa Derin** | Integration & Repository Lead |
+| **Simay Otlaca** | Documentation & Submission Lead |
+| **Ahmet Mert Kara** | Testing & Quality Assurance Lead |
+| **Ceren Şenol** | Learning & Research Lead |
+| **Elif Defne Çelik** | Presentation & Communication Lead |
+| **Ali Berkay Şahin** | Project Coordinator |
 
-Modern lifestyles make it difficult for users to find recipes that:
+---
 
-Fit within their nutritional and calorie goals
+## 🧍 Target Audience
 
-Can be prepared within limited time constraints
+- **University Students & Working Adults** – Seeking fast, healthy, and affordable meals.  
+- **Calorie-Conscious Individuals** – Wanting recipes that fit their daily calorie goals.  
+- **Waste-Conscious Consumers** – Hoping to use ingredients efficiently and reduce waste.
 
-Utilize ingredients they already have
+---
 
-This often leads to diet inconsistencies, time waste, and food waste.
+## ⚙️ Core Features
 
-💡 Our Solution
+### 🔹 1. Calorie Tracking
+Users can log daily meals and their estimated calorie values.
 
-PurePlate tackles these challenges by dynamically filtering recipes according to three main constraints:
+### 🔹 2. Dynamic Calorie Visualization Ring (NEW)
+A circular progress ring visually displays:
+- Remaining daily calorie budget  
+- Instant feedback on how much each suggested recipe will “fill up” that budget
 
-Remaining daily calories
+### 🔹 3. Calorie-Based Recipe Suggestions
+Recommends recipes that stay within or below the remaining daily calorie limit.
 
-Maximum preparation time
+### 🔹 4. Time-Based Filtering
+Users can set a **maximum preparation time** (e.g., 10, 20 minutes) for fast, efficient meal options.
 
-Available ingredients
+### 🔹 5. Ingredient-Based Filtering
+Select ingredients currently available (e.g., chicken, rice, eggs) and receive recipes using those items only.
 
-The result is an instant list of personalized, relevant recipes that:
+---
 
-Fit within the user’s nutritional limits
+## 🌟 Nice-to-Have Features (Future Enhancements)
 
-Can be made quickly
+- **Recipe Modifier:** Adjust portion size and substitute ingredients with automatic calorie recalculation.  
+- **Quick Log from History:** Instantly log calories from previously cooked/saved recipes.  
+- **Preference Learning:** Prioritize favorite ingredients/categories without ML (score-based system).  
+- **Meal Scheduling & Reminders:** Plan meals and receive notifications.  
+- **Pantry Score Gamification:** Earn badges and scores for minimizing food waste.  
+- **Photo Ingredient Recognition (Optional):** Detect fridge/pantry ingredients using photos.
 
-Reduce ingredient waste
+---
 
-👥 Target Audience
-Group	Description
-University Students & Working Adults	Want fast, affordable, and easy-to-prepare meals.
-Calorie-Conscious Users	Need recipes that fit precise calorie limits.
-Waste-Conscious Consumers	Want to use ingredients they already have efficiently.
-⚙️ Core Features
-1. Calorie Tracking
+## 💾 Platform & Data Storage
 
-Users can log daily meals and calories to monitor progress toward their daily goal.
+### 🧩 Platform
+- Developed with **Flutter** for cross-platform mobile deployment (Android & iOS).
 
-2. Dynamic Calorie Visualization (NEW)
+### 🗄️ Data Storage
+Using **Firebase Firestore (NoSQL)** to store:
+| Data Type | Description |
+|------------|--------------|
+| **User Profiles** | Credentials, dietary preferences, allergies, and cuisine choices. |
+| **Calorie Logs** | Daily meal and calorie data for computing remaining intake. |
+| **Recipe Catalog** | Recipe name, steps, calories, prep time, and ingredients. |
+| **User History** | Favorite, tried, or rated recipes for personalization. |
 
-A circular progress ring visually displays remaining calories.
-Each recipe shows how much it would “fill” the user’s remaining budget.
+---
 
-3. Calorie-Based Recipe Suggestions
+## ⚠️ Potential Challenges
 
-PurePlate automatically recommends recipes that match or stay under the user’s calorie allowance.
+1. **Recipe-Ingredient-Calorie Alignment:** Building a consistent dataset that accurately links ingredients, calories, and cooking time.  
+2. **User Input Normalization:** Handling diverse formats like “1 handful of nuts” or “100g chicken.”  
+3. **Efficient Filtering Logic:** Designing algorithms that handle calorie/time/ingredient filtering fast and efficiently.  
+4. **Preference Tracking (Non-ML):** Creating an effective scoring-based personalization system.
 
-4. Time-Based Filtering
+---
 
-Users can specify a maximum prep/cook time (e.g., 10–20 minutes).
+## 💎 Unique Selling Point (USP)
 
-5. Ingredient-Based Filtering
+PurePlate stands out by combining **three simultaneous filters**:
+1. **Calorie Goal**  
+2. **Time Limit**  
+3. **Available Ingredients**
 
-Users select ingredients they have, and PurePlate suggests recipes using those only.
+While other recipe apps typically focus on only one or two of these, PurePlate delivers **a real-time, dynamic, and personalized recommendation** system.  
 
-🌟 Nice-to-Have Features (Planned Enhancements)
-Feature	Description
-Recipe Modifier	Adjust portions, recalculate calories, or swap ingredients.
-Quick Log from History	Quickly log meals previously cooked or saved.
-Preference Learning (Non-ML)	Prioritize recipes based on user history using a lightweight scoring system.
-Meal Scheduling & Reminders	Plan meals for specific times and receive notifications.
-Pantry Score (Gamification)	Earn badges for reducing food waste through efficient ingredient usage.
-Photo-Based Ingredient Recognition (Optional)	Detect fridge/pantry ingredients through photo input (future feature).
-🧠 Technical Overview
-Platform
+Combined with its **Calorie Visualization Ring**, it uniquely helps users stay mindful of health goals while minimizing waste — **without needing heavy AI or ML models**.
 
-Developed using Flutter for cross-platform deployment (Android & iOS).
+---
 
-Ensures smooth, consistent user experience across devices.
+## 🛠️ Tech Stack Summary
 
-Data Storage
+| Category | Tools/Frameworks |
+|-----------|------------------|
+| **Frontend** | Flutter |
+| **Backend** | Firebase Firestore (NoSQL) |
+| **Authentication** | Firebase Auth |
+| **Data Management** | Firestore Collections & Documents |
+| **UI Components** | Flutter Widgets, Custom Calorie Ring Visualization |
 
-Uses Firebase Firestore (NoSQL) for fast and flexible cloud data management.
+---
 
-Data Type	Description
-User Profiles & Preferences	Stores dietary restrictions, cuisine types, and personal info.
-Calorie Logs	Tracks daily meals and calorie totals.
-Recipe Catalog	Includes recipe details: ingredients, calories, and preparation steps.
-User Interaction History	Keeps track of favorites, attempted recipes, and ratings.
-⚠️ Potential Challenges
-Challenge	Description
-Recipe-Ingredient-Calorie Alignment	Building a consistent dataset with accurate calorie, time, and ingredient details.
-User Input Normalization	Handling inconsistent user inputs like "a handful of nuts" or "medium apple."
-Efficient Filtering	Combining calorie, ingredient, and time filters efficiently without slowing the app.
-Preference Tracking Without ML	Implementing a lightweight recommendation system using frequency scoring.
-💎 Unique Selling Proposition (USP)
+## 📱 Example User Flow
 
-PurePlate stands out because it combines three major filters simultaneously:
+1. **User logs in** and enters their daily calorie goal.  
+2. **User logs meals** and remaining calories update visually via the progress ring.  
+3. **User selects ingredients and time limit.**  
+4. **PurePlate suggests recipes** that fit within calorie and time constraints using available ingredients.  
+5. **User saves or logs recipes** for future quick selection.
 
-Daily calorie goal
+---
 
-Time constraint
+## 🚀 Future Work
 
-Available ingredients
+- Implement real-time notifications for planned meals.  
+- Add gamified scoring and achievement badges.  
+- Develop an image recognition module for ingredient detection.  
+- Expand the recipe database with verified nutritional data.
 
-Most existing recipe apps use one or two of these factors.
-PurePlate’s unique triple-filter approach, coupled with the Dynamic Calorie Visualization Ring, makes meal planning faster, more relevant, and health-aware—without the complexity of heavy machine learning models.
+---
 
-🧰 Tech Stack
-Layer	Technology
-Frontend (Mobile)	Flutter
+## 📄 License
+This project is developed as part of a **university course project** and is currently intended for educational and demonstration purposes only.
+
+---
+
+## 💚 Acknowledgements
+We thank our course instructors and peers for their feedback and support during the project development phase.
+
+---
+
+### 🧠 Summary
+**PurePlate = Simplicity + Personalization + Awareness**  
+A smart and healthy way to plan your next meal — faster, cheaper, and greener.
