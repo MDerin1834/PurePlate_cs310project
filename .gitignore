@@ -1,0 +1,46 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Symbolic links
+symlinks/
+
+# iOS related
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Android related
+**/android/.gradle/
+**/android/captures/
+**/android/app/*.keystore
+**/android/app/*.jks
+**/android/local.properties
+**/android/key.properties
+
+# VS Code related
+.vscode/
+.idea/
+*.iml
+
+# Misc
+*.log
+*.tmp
+*.lock
+*.DS_Store
+
+# Flutter build outputs
+.flutter-plugins
+.flutter-plugins-dependencies
