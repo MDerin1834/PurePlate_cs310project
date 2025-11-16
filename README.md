@@ -1,4 +1,4 @@
-# 🍽️ PurePlate: Personalized Recipe Recommendation App
+# PurePlate: Personalized Recipe Recommendation App
 
 ### Developed by:
 **Mustafa Derin (32272)** | **Simay Otlaca (30804)** | **Ali Berkay Şahin (33996)**  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 
 **PurePlate** is a mobile application that helps users **track their daily calorie intake** and receive **personalized recipe suggestions** based on:
 - Remaining calorie budget  
@@ -17,9 +17,9 @@ With its **dynamic calorie visualization ring**, users receive instant visual fe
 
 ---
 
-## 🎯 Problem & Solution
+## Problem & Solution
 
-### ❌ The Problem
+### The Problem
 In today’s fast-paced world, individuals struggle to:
 - Find recipes that match their **nutritional goals**,  
 - Fit their **limited time**, and  
@@ -27,13 +27,13 @@ In today’s fast-paced world, individuals struggle to:
 
 This often leads to wasted food, time, and failed diet adherence.
 
-### ✅ The Solution
+### The Solution
 **PurePlate** combines **three essential filters** — calories, time, and ingredients — to provide recipes that perfectly fit user constraints.  
 It dynamically visualizes calorie usage, helping users stay on track while minimizing waste and cooking effort.
 
 ---
 
-## 👥 Team Roles
+## Team Roles
 
 | Member | Role |
 |--------|------|
@@ -46,7 +46,7 @@ It dynamically visualizes calorie usage, helping users stay on track while minim
 
 ---
 
-## 🧍 Target Audience
+## Target Audience
 
 - **University Students & Working Adults** – Seeking fast, healthy, and affordable meals.  
 - **Calorie-Conscious Individuals** – Wanting recipes that fit their daily calorie goals.  
@@ -54,28 +54,28 @@ It dynamically visualizes calorie usage, helping users stay on track while minim
 
 ---
 
-## ⚙️ Core Features
+## Core Features
 
-### 🔹 1. Calorie Tracking
+### 1. Calorie Tracking
 Users can log daily meals and their estimated calorie values.
 
-### 🔹 2. Dynamic Calorie Visualization Ring (NEW)
+### 2. Dynamic Calorie Visualization Ring (NEW)
 A circular progress ring visually displays:
 - Remaining daily calorie budget  
 - Instant feedback on how much each suggested recipe will “fill up” that budget
 
-### 🔹 3. Calorie-Based Recipe Suggestions
+### 3. Calorie-Based Recipe Suggestions
 Recommends recipes that stay within or below the remaining daily calorie limit.
 
-### 🔹 4. Time-Based Filtering
+### 4. Time-Based Filtering
 Users can set a **maximum preparation time** (e.g., 10, 20 minutes) for fast, efficient meal options.
 
-### 🔹 5. Ingredient-Based Filtering
+### 5. Ingredient-Based Filtering
 Select ingredients currently available (e.g., chicken, rice, eggs) and receive recipes using those items only.
 
 ---
 
-## 🌟 Nice-to-Have Features (Future Enhancements)
+## Nice-to-Have Features (Future Enhancements)
 
 - **Recipe Modifier:** Adjust portion size and substitute ingredients with automatic calorie recalculation.  
 - **Quick Log from History:** Instantly log calories from previously cooked/saved recipes.  
@@ -86,12 +86,12 @@ Select ingredients currently available (e.g., chicken, rice, eggs) and receive r
 
 ---
 
-## 💾 Platform & Data Storage
+## Platform & Data Storage
 
-### 🧩 Platform
+### Platform
 - Developed with **Flutter** for cross-platform mobile deployment (Android & iOS).
 
-### 🗄️ Data Storage
+### Data Storage
 Using **Firebase Firestore (NoSQL)** to store:
 | Data Type | Description |
 |------------|--------------|
@@ -102,7 +102,7 @@ Using **Firebase Firestore (NoSQL)** to store:
 
 ---
 
-## ⚠️ Potential Challenges
+## Potential Challenges
 
 1. **Recipe-Ingredient-Calorie Alignment:** Building a consistent dataset that accurately links ingredients, calories, and cooking time.  
 2. **User Input Normalization:** Handling diverse formats like “1 handful of nuts” or “100g chicken.”  
@@ -111,7 +111,7 @@ Using **Firebase Firestore (NoSQL)** to store:
 
 ---
 
-## 💎 Unique Selling Point (USP)
+## Unique Selling Point (USP)
 
 PurePlate stands out by combining **three simultaneous filters**:
 1. **Calorie Goal**  
@@ -124,7 +124,7 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
-## 🛠️ Tech Stack Summary
+## Tech Stack Summary
 
 | Category | Tools/Frameworks |
 |-----------|------------------|
@@ -136,7 +136,7 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
-## 📱 Example User Flow
+## Example User Flow
 
 1. **User logs in** and enters their daily calorie goal.  
 2. **User logs meals** and remaining calories update visually via the progress ring.  
@@ -146,7 +146,7 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
-## 🚀 Future Work
+## Future Work
 
 - Implement real-time notifications for planned meals.  
 - Add gamified scoring and achievement badges.  
@@ -155,16 +155,16 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
-## 📄 License
+## License
 This project is developed as part of a **university course project** and is currently intended for educational and demonstration purposes only.
 
 ---
 
-## 💚 Acknowledgements
+## Acknowledgements
 We thank our course instructors and peers for their feedback and support during the project development phase.
 
 ---
 
-### 🧠 Summary
+### Summary
 **PurePlate = Simplicity + Personalization + Awareness**  
 A smart and healthy way to plan your next meal — faster, cheaper, and greener.
