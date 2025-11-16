@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthtrack_cs310project/recipe.dart';
+import 'package:pure_plate/recipe.dart';
 
 class RecipeDescriptionWidget extends StatelessWidget {
   final Recipe recipe;

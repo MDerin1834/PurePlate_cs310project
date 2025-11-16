@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:healthtrack_cs310project/widgets/pureplate_app_scaffold.dart';
-import 'package:healthtrack_cs310project/widgets/recipe_tile_widget.dart';
-import 'package:healthtrack_cs310project/data/recipes.dart';
+import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
+import 'package:pure_plate/widgets/recipe_tile_widget.dart';
+import 'package:pure_plate/data/recipes.dart';
 
 class CalorieBudgetTrackerWidget extends StatelessWidget {
   final int calorieBudget;

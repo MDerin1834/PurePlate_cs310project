@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthtrack_cs310project/widgets/pureplate_app_navbar.dart';
+import 'package:pure_plate/widgets/pureplate_app_navbar.dart';
 
 class PurePlateAppScaffold extends StatelessWidget {
   final Widget body;
