@@ -10,19 +10,30 @@ class RecipeDescriptionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          recipe.name,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  recipe.name,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                Text('${recipe.calories} kcal'),
+                Text('${recipe.cookingTime} min cook time'),
+                recipe.isVegetarian
+                    ? Text('Vegetarian', style: TextStyle(color: Colors.green))
+                    : SizedBox.shrink(),
+                recipe.isLactoseFree
+                    ? Text(
+                        'Lactose Free',
+                        style: TextStyle(color: Colors.green),
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
+          ),
         ),
-        Text('${recipe.calories} kcal'),
-        Text('${recipe.cookingTime} min cook time'),
-        recipe.isVegetarian
-            ? Text('Vegetarian', style: TextStyle(color: Colors.green))
-            : SizedBox.shrink(),
-        recipe.isLactoseFree
-            ? Text('Lactose Free', style: TextStyle(color: Colors.green))
-            : SizedBox.shrink(),
-        Spacer(),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
