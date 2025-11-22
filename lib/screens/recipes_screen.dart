@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pure_plate/data/recipes.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/widgets/recipe_tile_widget.dart';
-import 'package:pure_plate/recipe.dart';
+import 'package:pure_plate/models/recipe.dart';
 
 class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
   final _controller = TextEditingController();

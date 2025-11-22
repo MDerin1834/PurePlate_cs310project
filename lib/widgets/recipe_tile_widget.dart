@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pure_plate/recipe.dart';
+import 'package:pure_plate/models/recipe.dart';
 
 class RecipeDescriptionWidget extends StatelessWidget {
   final Recipe recipe;
