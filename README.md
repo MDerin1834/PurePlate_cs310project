@@ -41,7 +41,6 @@ It dynamically visualizes calorie usage, helping users stay on track while minim
 | **Simay Otlaca** | Documentation & Submission Lead |
 | **Ahmet Mert Kara** | Testing & Quality Assurance Lead |
 | **Ceren Şenol** | Learning & Research Lead |
-| **Elif Defne Çelik** | Presentation & Communication Lead |
 | **Ali Berkay Şahin** | Project Coordinator |
 
 ---
