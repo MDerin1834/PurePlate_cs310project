@@ -34,7 +34,7 @@ class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/filter'),
             label: Text('Apply Filter'),
             icon: Icon(Icons.add),
             iconAlignment: IconAlignment.end,
