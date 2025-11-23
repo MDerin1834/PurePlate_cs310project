@@ -2,7 +2,7 @@
 
 ### Developed by:
 **Mustafa Derin (32272)** | **Simay Otlaca (30804)** | **Ali Berkay Şahin (33996)**  
-**Elif Defne Çelik (32233)** | **Ceren Şenol (33914)** | **Ahmet Mert Kara (32443)**
+**Ceren Şenol (33914)** | **Ahmet Mert Kara (32443)**
 
 ---
 
