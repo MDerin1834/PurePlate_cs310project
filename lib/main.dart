@@ -5,6 +5,7 @@ import 'package:pure_plate/screens/recipe_filtering_screen.dart';
 
 void main() {
   runApp(MaterialApp(
+    theme: purePlateTheme,
     initialRoute: '/',
     routes: {
       '/': (context) => const HomeScreen(),
