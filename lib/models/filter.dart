@@ -1,3 +1,5 @@
+import 'package:pure_plate/models/recipe.dart';
+
 class Filter {
   int maxCalories;
   int cookingTime;
@@ -14,4 +16,13 @@ class Filter {
     this.isLactoseFree = false,
     required this.ingredients,
   });
+
+  bool matches(Recipe r) {
+    return r.calories <= maxCalories &&
+        r.cookingTime <= cookingTime &&
+        (!isVegetarian || r.isVegetarian) &&
+        (!isLactoseFree || r.isLactoseFree) &&
+        (ingredients.isEmpty ||
+            r.ingredients.fold(true, (b, s) => b && ingredients.contains(s)));
+  }
 }
