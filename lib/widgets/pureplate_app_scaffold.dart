@@ -4,7 +4,13 @@ import 'package:pure_plate/widgets/pureplate_app_navbar.dart';
 class PurePlateAppScaffold extends StatelessWidget {
   final Widget body;
   final int pageIndex;
-  const PurePlateAppScaffold({required this.body, required this.pageIndex, super.key});
+  final FloatingActionButton? floatingActionButton;
+  const PurePlateAppScaffold({
+    required this.body,
+    required this.pageIndex,
+    this.floatingActionButton,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +29,7 @@ class PurePlateAppScaffold extends StatelessWidget {
       ),
       bottomNavigationBar: PurePlateAppNavigationBar(pageIndex: pageIndex),
       body: body,
+      floatingActionButton: floatingActionButton,
     );
   }
 }
