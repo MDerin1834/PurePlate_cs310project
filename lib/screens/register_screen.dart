@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pure_plate/theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
