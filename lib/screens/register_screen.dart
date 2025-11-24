@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pure_plate/utility/validation.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,6 +12,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   String? uploadedImagePath;
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> _handleRegister() async {
     FocusScope.of(context).unfocus();
@@ -18,7 +20,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
       setState(() => _isLoading = false);
-      Navigator.pushReplacementNamed(context, '/home');
+      if (_formKey.currentState!.validate())
+        Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -31,7 +34,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF2D6A4F)),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Color(0xFF2D6A4F),
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -69,7 +75,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             radius: 50,
                             backgroundColor: const Color(0xFFE8F5E9),
                             child: Icon(
-                              uploadedImagePath == null ? Icons.person_rounded : Icons.check_rounded,
+                              uploadedImagePath == null
+                                  ? Icons.person_rounded
+                                  : Icons.check_rounded,
                               size: 50,
                               color: const Color(0xFF2D6A4F),
                             ),
@@ -84,79 +92,100 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: Color(0xFF2D6A4F),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 30),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(
+                                labelText: "Name",
+                                prefixIcon: Icon(Icons.person_outline),
+                              ),
+                              validator: Validation.validateNotEmpty,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(
+                                labelText: "Surname",
+                                prefixIcon: Icon(Icons.person_outline),
+                              ),
+                              validator: Validation.validateNotEmpty,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
-                          labelText: "Name",
-                          prefixIcon: Icon(Icons.person_outline),
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email_outlined),
                         ),
+                        validator: Validation.validateEmail,
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: "Surname",
-                          prefixIcon: Icon(Icons.person_outline),
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        obscureText: !_isPasswordVisible,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          errorMaxLines: 2,
                         ),
+                        validator: Validation.validatePassword,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                      const SizedBox(height: 32),
 
-                TextField(
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                TextField(
-                  obscureText: !_isPasswordVisible,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _handleRegister,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text("SIGN UP"),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 32),
-
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleRegister,
-                  child: _isLoading
-                      ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)
-                  )
-                      : const Text("SIGN UP"),
                 ),
                 const SizedBox(height: 20),
               ],

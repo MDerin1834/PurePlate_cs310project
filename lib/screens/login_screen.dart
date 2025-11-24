@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pure_plate/utility/validation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,8 +9,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -22,7 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       setState(() => _isLoading = false);
-      Navigator.pushReplacementNamed(context, '/home');
+      if (_formKey.currentState!.validate())
+        Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -47,7 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Color(0xFFD8F3DC),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.lock_open_rounded, color: Color(0xFF2D6A4F), size: 48),
+                      child: const Icon(
+                        Icons.lock_open_rounded,
+                        color: Color(0xFF2D6A4F),
+                        size: 48,
+                      ),
                     ),
                   ),
                 ),
@@ -70,66 +75,89 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
 
-                TextField(
-                  controller: emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                TextField(
-                  controller: passCtrl,
-                  obscureText: !_isPasswordVisible,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email_outlined),
+                        ),
+                        validator: Validation.validateEmail,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
+                      const SizedBox(height: 20),
+
+                      TextFormField(
+                        obscureText: !_isPasswordVisible,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/reset'),
+                          child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color: Color(0xFF2D6A4F),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _handleLogin,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text("LOGIN"),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      OutlinedButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.pushNamed(context, '/register'),
+                        child: const Text("CREATE ACCOUNT"),
+                      ),
+                    ],
                   ),
-                ),
-
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/reset'),
-                    child: const Text(
-                      "Forgot Password?",
-                      style: TextStyle(color: Color(0xFF2D6A4F), fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
-                  child: _isLoading
-                      ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)
-                  )
-                      : const Text("LOGIN"),
-                ),
-
-                const SizedBox(height: 20),
-
-                OutlinedButton(
-                  onPressed: _isLoading ? null : () => Navigator.pushNamed(context, '/register'),
-                  child: const Text("CREATE ACCOUNT"),
                 ),
 
                 const SizedBox(height: 20),
