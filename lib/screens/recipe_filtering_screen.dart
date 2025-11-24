@@ -12,7 +12,11 @@ class SettingsContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.teal, width: 4),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 4,
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
         padding: EdgeInsets.all(8),
