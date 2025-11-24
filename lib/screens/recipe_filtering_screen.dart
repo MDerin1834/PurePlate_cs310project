@@ -81,7 +81,7 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
     return PurePlateAppScaffold(
       pageIndex: 1,
       body: SizedBox(
-        width: 300,
+        //width: 300,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(5),
           child: Column(
@@ -205,6 +205,7 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 70)
             ],
           ),
         ),
