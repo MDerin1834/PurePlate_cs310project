@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pure_plate/screens/welcome_page.dart';
+import 'welcome_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -62,21 +62,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeInOutCubic,
                       );
                     } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Scaffold(
-                            body: Center(
-                              child: Text(
-                                "Onboarding Completed.\n(Redirecting to Auth)",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
+                      // Navigate to login screen instead of placeholder
+                      Navigator.pushReplacementNamed(context, '/login');
                     }
                   },
                   backgroundColor: const Color(0xFF2D6A4F),
