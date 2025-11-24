@@ -47,7 +47,7 @@ final purePlateTheme = ThemeData(
       foregroundColor: const Color(0xFF2D6A4F),
       side: const BorderSide(color: Color(0xFF2D6A4F), width: 1.5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
     ),
   ),
