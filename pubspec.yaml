@@ -57,6 +57,21 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Asset Images
+  assets:
+    - lib/assets/images/default_profile.png
+    # Add more images here as needed
+
+  # Custom Fonts
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: lib/assets/fonts/Poppins-Regular.ttf
+        - asset: lib/assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: lib/assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
