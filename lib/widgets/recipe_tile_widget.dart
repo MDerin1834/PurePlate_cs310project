@@ -7,6 +7,8 @@ class RecipeDescriptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -17,19 +19,34 @@ class RecipeDescriptionWidget extends StatelessWidget {
               children: [
                 Text(
                   recipe.name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text('${recipe.calories} kcal'),
-                Text('${recipe.cookingTime} min cook time'),
-                recipe.isVegetarian
-                    ? Text('Vegetarian', style: TextStyle(color: Colors.green))
-                    : SizedBox.shrink(),
-                recipe.isLactoseFree
-                    ? Text(
-                        'Lactose Free',
-                        style: TextStyle(color: Colors.green),
-                      )
-                    : SizedBox.shrink(),
+                Text(
+                  '${recipe.calories} kcal',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                Text(
+                  '${recipe.cookingTime} min cook time',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                if (recipe.isVegetarian)
+                  Text(
+                    'Vegetarian',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                if (recipe.isLactoseFree)
+                  Text(
+                    'Lactose Free',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -38,11 +55,21 @@ class RecipeDescriptionWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(width: 10),
-            recipe.isFavourite ? Icon(Icons.favorite) : SizedBox.shrink(),
+            if (recipe.isFavourite)
+              Icon(
+                Icons.favorite,
+                color: Colors.red.shade400,
+              ),
             Spacer(),
             ElevatedButton.icon(
               iconAlignment: IconAlignment.end,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/recipe-details',
+                  arguments: recipe,
+                );
+              },
               label: Text('Go to meal'),
               icon: Icon(Icons.arrow_forward),
             ),
@@ -65,30 +92,75 @@ class RecipeTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.teal, width: 4),
+        side: BorderSide(
+          color: theme.colorScheme.primary,
+          width: 4,
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       margin: EdgeInsets.all(5),
       child: Padding(
         padding: EdgeInsets.all(8),
         child: isHorizontal
             ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.network(recipe.imageURL),
-                  SizedBox(width: 10),
-                  Expanded(child: RecipeDescriptionWidget(recipe: recipe)),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.network(recipe.imageURL),
-                  SizedBox(height: 10),
-                  Expanded(child: RecipeDescriptionWidget(recipe: recipe)),
-                ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                recipe.imageURL,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 100,
+                    height: 100,
+                    color: theme.colorScheme.secondary,
+                    child: Icon(
+                      Icons.restaurant,
+                      color: theme.colorScheme.primary,
+                    ),
+                  );
+                },
               ),
+            ),
+            SizedBox(width: 10),
+            Expanded(child: RecipeDescriptionWidget(recipe: recipe)),
+          ],
+        )
+            : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                recipe.imageURL,
+                width: double.infinity,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: double.infinity,
+                    height: 120,
+                    color: theme.colorScheme.secondary,
+                    child: Icon(
+                      Icons.restaurant,
+                      size: 40,
+                      color: theme.colorScheme.primary,
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 10),
+            Expanded(child: RecipeDescriptionWidget(recipe: recipe)),
+          ],
+        ),
       ),
     );
   }
