@@ -34,7 +34,7 @@ class FilteredRecipesScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   child: Text('Refine Filters'),
-                  onPressed: () => Navigator.pushNamed(context, '/filter'),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
