@@ -207,7 +207,9 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Apply the filter'),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/filtered', arguments: filter);
+        },
       ),
     );
   }
