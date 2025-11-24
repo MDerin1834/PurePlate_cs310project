@@ -36,7 +36,7 @@ class Validation {
       return 'Password should contain at least one digit';
     }
 
-    if (!password.contains(specialChars)) {
+    if (!password.contains(RegExp('[$specialChars]'))) {
       return 'Password should contain at least one of \'$specialChars\'';
     }
 
