@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
-import 'package:pure_plate/data/recipes.dart';
+
+// MealRecord Model Class
+class MealRecord {
+  final String mealName;
+  final int calories;
+  final String time;
+
+  const MealRecord({
+    required this.mealName,
+    required this.calories,
+    required this.time,
+  });
+}
 
 class DailyRecordCard extends StatelessWidget {
   final String mealName;
   final int calories;
   final String time;
+  final VoidCallback? onDelete;
 
   const DailyRecordCard({
     required this.mealName,
     required this.calories,
     required this.time,
+    this.onDelete,
     super.key,
   });
 
@@ -43,20 +57,33 @@ class DailyRecordCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(time),
-        trailing: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade100,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.orange, width: 1.5),
-          ),
-          child: Text(
-            '$calories kcal',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.orange.shade900,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.orange, width: 1.5),
+              ),
+              child: Text(
+                '$calories kcal',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade900,
+                ),
+              ),
             ),
-          ),
+            if (onDelete != null) ...[
+              SizedBox(width: 8),
+              IconButton(
+                icon: Icon(Icons.delete_outline, color: Colors.red),
+                onPressed: onDelete,
+                tooltip: 'Delete meal',
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -190,12 +217,84 @@ class AchievementBadge extends StatelessWidget {
   }
 }
 
-class RecordsScreen extends StatelessWidget {
+class RecordsScreen extends StatefulWidget {
   const RecordsScreen({super.key});
+
+  @override
+  State<RecordsScreen> createState() => _RecordsScreenState();
+}
+
+class _RecordsScreenState extends State<RecordsScreen> {
+  // Initial meals list
+  List<MealRecord> todaysMeals = [
+    MealRecord(
+      mealName: 'Pizza Express Margherita',
+      calories: 1170,
+      time: '08:30 AM',
+    ),
+    MealRecord(
+      mealName: 'Lamb and Lemon Souvlaki',
+      calories: 1163,
+      time: '01:00 PM',
+    ),
+    MealRecord(
+      mealName: 'Sticky Chicken',
+      calories: 408,
+      time: '07:30 PM',
+    ),
+  ];
+
+  // Calculate total calories dynamically
+  int _calculateTotalCalories() {
+    return todaysMeals.fold(0, (sum, meal) => sum + meal.calories);
+  }
+
+  // Delete meal with confirmation dialog
+  void _deleteMeal(int index) {
+    final mealToDelete = todaysMeals[index];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Meal'),
+          content: Text(
+            'Are you sure you want to delete "${mealToDelete.mealName}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  todaysMeals.removeAt(index);
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Meal deleted successfully'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final totalCalories = _calculateTotalCalories();
 
     return PurePlateAppScaffold(
       pageIndex: 0,
@@ -230,29 +329,49 @@ class RecordsScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              "Today's Meals",
+              "Today's Meals (${todaysMeals.length})",
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             SizedBox(height: 15),
 
-            // Today's Meals
-            DailyRecordCard(
-              mealName: recipes[0].name,
-              calories: recipes[0].calories,
-              time: '08:30 AM',
-            ),
-            DailyRecordCard(
-              mealName: recipes[1].name,
-              calories: recipes[1].calories,
-              time: '01:00 PM',
-            ),
-            DailyRecordCard(
-              mealName: recipes[2].name,
-              calories: recipes[2].calories,
-              time: '07:30 PM',
-            ),
+            // Today's Meals - Dynamic List
+            if (todaysMeals.isEmpty)
+            // Empty state
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.no_meals_outlined,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No meals logged today',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+            // Meals list with delete buttons
+              ...todaysMeals.asMap().entries.map((entry) {
+                final index = entry.key;
+                final meal = entry.value;
+                return DailyRecordCard(
+                  mealName: meal.mealName,
+                  calories: meal.calories,
+                  time: meal.time,
+                  onDelete: () => _deleteMeal(index),
+                );
+              }),
 
             SizedBox(height: 30),
 
@@ -267,7 +386,7 @@ class RecordsScreen extends StatelessWidget {
 
             NutrientProgressCard(
               label: 'Calories',
-              current: 1400,
+              current: totalCalories, // Dynamic calculation
               target: 2000,
               color: Colors.orange,
             ),
