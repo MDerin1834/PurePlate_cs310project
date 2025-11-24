@@ -13,7 +13,7 @@ class PurePlateAppNavigationBar extends StatelessWidget {
         onDestinationSelected: (index) {
           if (index == pageIndex) return;
           switch (index) {
-            case 0: Navigator.pushNamed(context, '/');
+            case 0: Navigator.pushNamed(context, '/home');
             case 1: Navigator.pushNamed(context, '/recipes');
             case 2: Navigator.pushNamed(context, '/profile');
           }
