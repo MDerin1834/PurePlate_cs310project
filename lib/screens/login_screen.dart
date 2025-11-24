@@ -10,11 +10,64 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleLogin() async {
     FocusScope.of(context).unfocus();
+
+    // Validate form and collect errors
+    if (!_formKey.currentState!.validate()) {
+      // Get specific error message
+      String errorMessage = '';
+
+      final emailError = Validation.validateEmail(_emailController.text);
+      final passwordError = _passwordController.text.isEmpty
+          ? 'Please enter your password'
+          : null;
+
+      if (emailError != null) {
+        errorMessage = emailError;
+      } else if (passwordError != null) {
+        errorMessage = passwordError;
+      }
+
+      // Show AlertDialog with validation error
+      if (errorMessage.isNotEmpty) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Validation Error'),
+                ],
+              ),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -22,8 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       setState(() => _isLoading = false);
-      if (_formKey.currentState!.validate())
-        Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -80,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
@@ -91,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
 
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
@@ -138,13 +192,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: _isLoading ? null : _handleLogin,
                         child: _isLoading
                             ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                             : const Text("LOGIN"),
                       ),
 
