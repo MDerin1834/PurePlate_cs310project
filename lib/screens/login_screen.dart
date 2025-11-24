@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       setState(() => _isLoading = false);
-      Navigator.pushNamedAndRemoveUntil(context, '/home', ModalRoute.withName('/'));
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
     }
   }
 
