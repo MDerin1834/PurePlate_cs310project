@@ -61,9 +61,9 @@ class RecipesListWidget extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: recipes.length,
         itemBuilder: (context, index) => Center(
-          child: Container(
+          child: SizedBox(
             width: 400,
-            constraints: BoxConstraints(maxHeight: 200),
+            height: 200,
             child: RecipeTileWidget(recipe: recipes[index], isHorizontal: true),
           ),
         ),
@@ -78,7 +78,8 @@ class FavouriteRecipesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      height: 300,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,7 +101,8 @@ class SuggestedRecipesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      height: 300,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,19 +125,21 @@ class RecipesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PurePlateAppScaffold(
-      body: Column(
-        children: [
-          RecipeSearchBarWidget(),
-          SizedBox(height: 20),
-          FavouriteRecipesListWidget(),
-          const Divider(
-            height: 25,
-            thickness: 5,
-            endIndent: 0,
-            color: Colors.grey,
-          ),
-          SuggestedRecipesListWidget()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            RecipeSearchBarWidget(),
+            SizedBox(height: 20),
+            FavouriteRecipesListWidget(),
+            const Divider(
+              height: 25,
+              thickness: 5,
+              endIndent: 0,
+              color: Colors.grey,
+            ),
+            SuggestedRecipesListWidget(),
+          ],
+        ),
       ),
       pageIndex: 1,
     );

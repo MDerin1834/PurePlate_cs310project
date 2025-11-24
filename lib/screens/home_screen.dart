@@ -99,39 +99,42 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PurePlateAppScaffold(
       pageIndex: 0,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 20),
-          LogMealViewWidget(),
-          const Divider(
-            height: 25,
-            thickness: 5,
-            endIndent: 0,
-            color: Colors.teal,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 8),
-            child: Text(
-              'Scheduled Recipes',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 20),
+            LogMealViewWidget(),
+            const Divider(
+              height: 25,
+              thickness: 5,
+              endIndent: 0,
+              color: Colors.teal,
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: recipes.length,
-              itemBuilder: (context, index) => Center(
-                child: Container(
-                  width: 250,
-                  constraints: BoxConstraints(maxHeight: 400),
-                  child: RecipeTileWidget(recipe: recipes[index]),
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Text(
+                'Scheduled Recipes',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: 350,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: recipes.length,
+                itemBuilder: (context, index) => Center(
+                  child: Container(
+                    width: 250,
+                    constraints: BoxConstraints(maxHeight: 400),
+                    child: RecipeTileWidget(recipe: recipes[index]),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
