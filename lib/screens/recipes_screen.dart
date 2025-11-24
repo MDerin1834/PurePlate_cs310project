@@ -85,7 +85,7 @@ class FavouriteRecipesListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'Your Favourites',
+            'Your Favorites',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
           RecipesListWidget(recipes: _favourites),
