@@ -31,7 +31,7 @@ class CalorieBudgetTrackerWidget extends StatelessWidget {
           CircularProgressIndicator(
             constraints: BoxConstraints(minWidth: size, minHeight: size),
             color: Colors.green,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             strokeWidth: 20.0,
             value: currentCalories / calorieBudget,
           ),

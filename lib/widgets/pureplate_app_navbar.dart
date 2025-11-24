@@ -8,7 +8,7 @@ class PurePlateAppNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return NavigationBar(
         selectedIndex: pageIndex,
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         indicatorShape: CircleBorder(),
         onDestinationSelected: (index) {
           if (index == pageIndex) return;

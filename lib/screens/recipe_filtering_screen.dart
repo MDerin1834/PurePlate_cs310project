@@ -49,7 +49,12 @@ class PreferenceWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: Theme.of(context).textTheme.bodyLarge),
-        Switch(value: value, onChanged: onChanged),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          inactiveTrackColor: Theme.of(context).scaffoldBackgroundColor,
+          inactiveThumbColor: Colors.grey,
+        ),
       ],
     );
   }

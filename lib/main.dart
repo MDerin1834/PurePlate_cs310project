@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pure_plate/screens/home_screen.dart';
 import 'package:pure_plate/screens/recipes_screen.dart';
 import 'package:pure_plate/screens/recipe_filtering_screen.dart';
+import 'package:pure_plate/theme.dart';
 
 void main() {
   runApp(MaterialApp(

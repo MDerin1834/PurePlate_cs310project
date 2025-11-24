@@ -22,9 +22,7 @@ class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
               controller: _controller,
               decoration: InputDecoration(
                 hintText: 'Search recipes',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22.5),
-                ),
+                border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
                 suffixIcon: IconButton(
                   onPressed: () => _controller.clear(),
