@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'welcome_page.dart';
+import 'package:pure_plate/screens/welcome_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();

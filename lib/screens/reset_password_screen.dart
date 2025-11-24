@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pure_plate/theme.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
