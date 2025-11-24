@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 final purePlateTheme = ThemeData(
   primaryColor: const Color(0xFF2D6A4F),
   scaffoldBackgroundColor: const Color(0xFFF7F9F7),
-  fontFamily: 'Roboto',
+  fontFamily: 'Poppins',
   colorScheme: ColorScheme.fromSwatch().copyWith(
     primary: const Color(0xFF2D6A4F),
     secondary: const Color(0xFFD8F3DC),
