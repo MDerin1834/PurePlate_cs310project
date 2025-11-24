@@ -23,7 +23,7 @@ void main() {
       '/register': (context) => const RegisterScreen(),
       '/reset': (context) => const ResetPasswordScreen(),
       '/home': (context) => const HomeScreen(),
-      '/': (context) => const OnboardingScreen(), // Default route
+      '/': (context) => const HomeScreen(), // Default route
       '/recipes': (context) => const RecipesScreen(),
       '/filter': (context) => const RecipeFilteringScreen(),
       '/filtered': (context) => const FilteredRecipesScreen(),
