@@ -80,10 +80,26 @@ class LogMealViewWidget extends StatelessWidget {
             calorieBudget: 3200,
             currentCalories: 1400,
           ),
-          ElevatedButton.icon(
-            icon: Icon(Icons.add_circle),
-            label: Text('Log Meal'),
-            onPressed: () {},
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                style: ButtonStyle(),
+                icon: Icon(Icons.add_circle),
+                label: Text('Log Meal'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/recipes');
+                },
+              ),
+              SizedBox(width: 10),
+              OutlinedButton.icon(
+                icon: Icon(Icons.analytics),
+                label: Text('See Records'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/records');
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -91,16 +107,12 @@ class LogMealViewWidget extends StatelessWidget {
   }
 }
 
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final scheduled = [
-      (1, DateTime(2025, 1, 1, 12, 0, 0)),
-      (2, DateTime(2025, 1, 1, 18, 0, 0)),
-    ];
-
     return PurePlateAppScaffold(
       pageIndex: 0,
       body: SingleChildScrollView(
@@ -127,38 +139,14 @@ class HomeScreen extends StatelessWidget {
               height: 350,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: scheduled.length,
-                itemBuilder: (context, index) {
-                  final hour = scheduled[index].$2.hour;
-                  final minute = scheduled[index].$2.minute;
-                  final hourString = hour.toString().padLeft(2, '0');
-                  final minuteString = minute.toString().padLeft(2, '0');
-                  var icon = Icons.wb_twilight;
-                  if (hour >= 16) {
-                    icon = Icons.mode_night;
-                  } else if (hour >= 12) {
-                    icon = Icons.wb_sunny;
-                  }
-                  final timeString = '$hourString:$minuteString';
-                  return Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 250,
-                          constraints: BoxConstraints(maxHeight: 326),
-                          child: RecipeTileWidget(
-                            recipe: recipes[scheduled[index].$1],
-                          ),
-                        ),
-
-                        Row(
-                          spacing: 10,
-                          children: [Icon(icon), Text(timeString)],
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                itemCount: recipes.length,
+                itemBuilder: (context, index) => Center(
+                  child: Container(
+                    width: 250,
+                    constraints: BoxConstraints(maxHeight: 400),
+                    child: RecipeTileWidget(recipe: recipes[index]),
+                  ),
+                ),
               ),
             ),
           ],
@@ -167,3 +155,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
