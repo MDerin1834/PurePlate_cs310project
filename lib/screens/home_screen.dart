@@ -168,6 +168,8 @@ class HomeScreen extends StatelessWidget {
   Future<void> _handleLogout(BuildContext context) async {
     try {
       final authProvider = context.read<AuthProvider>();
+      
+      // 1. Çıkış yap
       await authProvider.logout();
 
       if (context.mounted) {
@@ -179,8 +181,10 @@ class HomeScreen extends StatelessWidget {
           ),
         );
 
+        // 2. AuthGate ('/') rotasına yönlendir
+        // Bu sayede AuthGate kullanıcının çıktığını görüp Login ekranını açacaktır.
         Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login',
+          '/', 
           (route) => false,
         );
       }
