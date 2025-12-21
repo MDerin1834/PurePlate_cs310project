@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pure_plate/providers/auth_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/data/user_data.dart';
 
@@ -239,6 +241,26 @@ class ProfileScreen extends StatelessWidget {
                   'Edit Profile',
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
+
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                    await context.read<AuthProvider>().logout();
+                    Navigator.popAndPushNamed(context, '/login');
+                },
+                icon: Icon(Icons.logout),
+                label: Text(
+                  'Log Out',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red
                   ),
                 ),
               ),

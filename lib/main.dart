@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/widgets/auth_gate.dart';
 import 'firebase_options.dart';
 import 'package:pure_plate/screens/onboarding_screen.dart';
 import 'package:pure_plate/screens/login_screen.dart';
@@ -23,7 +26,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+      ],
+      child: const MyApp()
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -33,14 +43,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: purePlateTheme,
-      initialRoute: '/onboarding',
+      initialRoute: '/',
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/reset': (context) => const ResetPasswordScreen(),
         '/home': (context) => const HomeScreen(),
-        '/': (context) => const HomeScreen(), // Default route
+        '/': (context) => const AuthGate(), // Default route
         '/recipes': (context) => const RecipesScreen(),
         '/filter': (context) => const RecipeFilteringScreen(),
         '/filtered': (context) => const FilteredRecipesScreen(),

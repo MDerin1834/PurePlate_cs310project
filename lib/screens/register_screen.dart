@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pure_plate/utility/validation.dart';
+
+import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,23 +13,56 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
   String? uploadedImagePath;
   final _formKey = GlobalKey<FormState>();
 
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleRegister() async {
     FocusScope.of(context).unfocus();
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() => _isLoading = false);
-      if (_formKey.currentState!.validate())
-        Navigator.pushReplacementNamed(context, '/home');
+
+    if (!_formKey.currentState!.validate()) return;
+
+    final authProvider = context.read<AuthProvider>();
+
+    await authProvider.register(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    // Navigation YOK
+    // AuthGate otomatik yönlendirecek
+
+    if (authProvider.errorMessage != null) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Registration Failed'),
+          content: Text(authProvider.errorMessage!),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -137,6 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 16),
 
                       TextFormField(
+                        controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
@@ -148,6 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 16),
 
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
@@ -172,8 +210,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 32),
 
                       ElevatedButton(
-                        onPressed: _isLoading ? null : _handleRegister,
-                        child: _isLoading
+                        onPressed: authProvider.isLoading ? null : _handleRegister,
+                        child: authProvider.isLoading
                             ? const SizedBox(
                                 height: 24,
                                 width: 24,

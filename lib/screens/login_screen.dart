@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pure_plate/utility/validation.dart';
+
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,56 +29,32 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     FocusScope.of(context).unfocus();
 
-    // Validate form and collect errors
-    if (!_formKey.currentState!.validate()) {
-      // Get specific error message
-      String errorMessage = '';
+    if (!_formKey.currentState!.validate()) return;
 
-      final emailError = Validation.validateEmail(_emailController.text);
-      final passwordError = _passwordController.text.isEmpty
-          ? 'Please enter your password'
-          : null;
+    final authProvider = context.read<AuthProvider>();
 
-      if (emailError != null) {
-        errorMessage = emailError;
-      } else if (passwordError != null) {
-        errorMessage = passwordError;
-      }
+    await authProvider.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
 
-      // Show AlertDialog with validation error
-      if (errorMessage.isNotEmpty) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Row(
-                children: [
-                  Icon(Icons.error_outline, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Validation Error'),
-                ],
-              ),
-              content: Text(errorMessage),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-      return;
-    }
+    if (!mounted) return;
 
-    setState(() => _isLoading = true);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+    // ❗ Navigation YOK — AuthGate yönetecek
+    if (authProvider.errorMessage != null) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Login Failed'),
+          content: Text(authProvider.errorMessage!),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
