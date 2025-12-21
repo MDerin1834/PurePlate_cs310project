@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "279887197900",
-    "project_id": "pureplate-20e4d",
-    "storage_bucket": "pureplate-20e4d.firebasestorage.app"
+    "project_number": "365556069856",
+    "project_id": "pureplate-4f35b",
+    "storage_bucket": "pureplate-4f35b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:279887197900:android:7c6bf46022c374cf46b469",
+        "mobilesdk_app_id": "1:365556069856:android:081a3f1b1f3ccf67b46785",
         "android_client_info": {
           "package_name": "com.example.pure_plate"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCffnoPKnRdgWNuackqMBSE7r_Ent0j8xc"
+          "current_key": "AIzaSyBfN4ItcGqqdtox3eGcZUtxJj9pQ8jKfXI"
         }
       ],
       "services": {

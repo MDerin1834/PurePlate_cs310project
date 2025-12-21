@@ -15,10 +15,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY_HERE',
-    appId: 'YOUR_APP_ID_HERE',
-    messagingSenderId: 'YOUR_SENDER_ID_HERE',
-    projectId: 'pureplate',
-    storageBucket: 'pureplate.firebasestorage.app',
+    apiKey: 'AIzaSyBfN4ItcGqqdtox3eGcZUtxJj9pQ8jKfXI',
+    appId: '1:365556069856:android:081a3f1b1f3ccf67b46785',
+    messagingSenderId: '365556069856',
+    projectId: 'pureplate-4f35b',
+    storageBucket: 'pureplate-4f35b.firebasestorage.app',
   );
+
 }
