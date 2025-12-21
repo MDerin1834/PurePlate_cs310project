@@ -38,23 +38,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
-    // ❗ NAVIGATION YOK — AuthGate yönetecek
     if (authProvider.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Login Failed'),
-            content: Text(authProvider.errorMessage!),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      });
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          title: const Text('Login Failed'),
+          content: Text(authProvider.errorMessage!),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -72,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(20),
@@ -87,9 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 Text(
                   "Welcome Back",
                   textAlign: TextAlign.center,
@@ -99,9 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.blueGrey[900],
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 Text(
                   "Sign in to continue your healthy journey",
                   textAlign: TextAlign.center,
@@ -110,9 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.grey[600],
                   ),
                 ),
-
                 const SizedBox(height: 40),
-
                 Form(
                   key: _formKey,
                   child: Column(
@@ -126,9 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: Validation.validateEmail,
                       ),
-
                       const SizedBox(height: 20),
-
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
@@ -155,7 +144,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -170,9 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 24),
-
                       ElevatedButton(
                         onPressed:
                             authProvider.isLoading ? null : _handleLogin,
@@ -187,9 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               )
                             : const Text("LOGIN"),
                       ),
-
                       const SizedBox(height: 20),
-
                       OutlinedButton(
                         onPressed: () =>
                             Navigator.pushNamed(context, '/register'),
