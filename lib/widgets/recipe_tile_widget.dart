@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pure_plate/models/recipe.dart';
+import 'package:pure_plate/providers/favourites_provider.dart';
 
 class RecipeDescriptionWidget extends StatelessWidget {
   final Recipe recipe;
@@ -8,6 +10,8 @@ class RecipeDescriptionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final favouritesProvider = context.watch<FavouritesProvider>();
+    final favourites = favouritesProvider.favourites;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +59,7 @@ class RecipeDescriptionWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(width: 10),
-            if (recipe.isFavourite)
+            if (favourites.contains(recipe.name)) // TODO: use recipe.id instead od recipe.name
               Icon(
                 Icons.favorite,
                 color: Colors.red.shade400,

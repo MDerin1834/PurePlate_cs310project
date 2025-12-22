@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/providers/favourites_provider.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
 import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/providers/user_profile_provider.dart';
@@ -40,6 +41,10 @@ void main() async {
             ChangeNotifierProxyProvider<AuthProvider, UserProfileProvider>(
               create: (context) => UserProfileProvider(context.read<AuthProvider>()),
               update: (context, auth, previous) => UserProfileProvider(auth),
+            ),
+            ChangeNotifierProxyProvider<AuthProvider, FavouritesProvider>(
+              create: (context) => FavouritesProvider(context.read<AuthProvider>()),
+              update: (context, auth, previous) => FavouritesProvider(auth),
             ),
           ],
           child: const MyApp()

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pure_plate/providers/favourites_provider.dart';
 import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/widgets/recipe_tile_widget.dart';
@@ -79,7 +80,9 @@ class FavouriteRecipesListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final recipeProvider = context.watch<RecipeProvider>();
-    final favourites = recipeProvider.favouriteRecipes;
+    final recipes = recipeProvider.recipes;
+    final favouritesProvider = context.watch<FavouritesProvider>();
+    final favourites = favouritesProvider.favourites;
 
     return SizedBox(
       height: 300,
@@ -101,7 +104,7 @@ class FavouriteRecipesListWidget extends StatelessWidget {
               ),
             )
           else
-            RecipesListWidget(recipes: favourites),
+            RecipesListWidget(recipes: recipes.where((r) => favourites.contains(r.name)).toList()), // TODO: use recipe.id instead od recipe.name
         ],
       ),
     );

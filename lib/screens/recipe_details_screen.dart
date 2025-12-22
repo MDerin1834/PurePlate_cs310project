@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pure_plate/models/recipe.dart';
+import 'package:pure_plate/providers/favourites_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
@@ -11,6 +12,9 @@ class RecipeDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
     final theme = Theme.of(context);
+
+    final favouritesProvider = context.watch<FavouritesProvider>();
+    final favourites = favouritesProvider.favourites;
 
     return PurePlateAppScaffold(
       pageIndex: 1,
@@ -60,16 +64,21 @@ class RecipeDetailsScreen extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: IconButton(
                       icon: Icon(
-                        recipe.isFavourite ? Icons.favorite : Icons.favorite_border,
-                        color: recipe.isFavourite ? Colors.red : Colors.grey,
+                        favourites.contains(recipe.name) ? Icons.favorite : Icons.favorite_border, // TODO: use recipe.id instead od recipe.name
+                        color: favourites.contains(recipe.name) ? Colors.red : Colors.grey,
                       ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                      onPressed: () async {
+                        if (favourites.contains(recipe.name)) {
+                          favouritesProvider.deleteFavourite(recipeId: recipe.name);
+                        } else {
+                          favouritesProvider.addFavourite(recipe.name);
+                        }
+                        /*ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Favorite toggle not implemented'),
                             duration: Duration(seconds: 1),
                           ),
-                        );
+                        );*/
                       },
                     ),
                   ),

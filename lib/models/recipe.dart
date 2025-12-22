@@ -44,8 +44,26 @@ class Recipe {
     );
   }
 
+  factory Recipe.fromMap(Map<String, dynamic> data) {
+    return Recipe(
+      id: data['id'] ?? "",
+      name: data['name'] ?? '',
+      imageURL: data['imageURL'] ?? '',
+      calories: data['calories'] ?? 0,
+      cookingTime: data['cookingTime'] ?? 0,
+      instructions: data['instructions'] ?? '',
+      ingredients: List<String>.from(data['ingredients'] ?? []),
+      isVegetarian: data['isVegetarian'] ?? false,
+      isLactoseFree: data['isLactoseFree'] ?? false,
+      isFavourite: data['isFavourite'] ?? false,
+      protein: data['protein'] ?? 0,
+    );
+  }
+
+  // Convert Recipe to Map for Firestore
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'imageURL': imageURL,
       'calories': calories,
