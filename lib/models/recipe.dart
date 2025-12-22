@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Recipe {
+  final String? id;
   final String name;
   final String imageURL;
   final int calories;
@@ -10,6 +13,7 @@ class Recipe {
   final bool isFavourite;
 
   const Recipe({
+    this.id,
     required this.name,
     required this.imageURL,
     required this.calories,
@@ -20,4 +24,62 @@ class Recipe {
     this.isLactoseFree = false,
     this.isFavourite = false,
   });
+
+  // Convert Firestore document to Recipe
+  factory Recipe.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Recipe(
+      id: doc.id,
+      name: data['name'] ?? '',
+      imageURL: data['imageURL'] ?? '',
+      calories: data['calories'] ?? 0,
+      cookingTime: data['cookingTime'] ?? 0,
+      instructions: data['instructions'] ?? '',
+      ingredients: List<String>.from(data['ingredients'] ?? []),
+      isVegetarian: data['isVegetarian'] ?? false,
+      isLactoseFree: data['isLactoseFree'] ?? false,
+      isFavourite: data['isFavourite'] ?? false,
+    );
+  }
+
+  // Convert Recipe to Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'imageURL': imageURL,
+      'calories': calories,
+      'cookingTime': cookingTime,
+      'instructions': instructions,
+      'ingredients': ingredients,
+      'isVegetarian': isVegetarian,
+      'isLactoseFree': isLactoseFree,
+      'isFavourite': isFavourite,
+    };
+  }
+
+  Recipe copyWith({
+    String? id,
+    String? name,
+    String? imageURL,
+    int? calories,
+    int? cookingTime,
+    String? instructions,
+    List<String>? ingredients,
+    bool? isVegetarian,
+    bool? isLactoseFree,
+    bool? isFavourite,
+  }) {
+    return Recipe(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageURL: imageURL ?? this.imageURL,
+      calories: calories ?? this.calories,
+      cookingTime: cookingTime ?? this.cookingTime,
+      instructions: instructions ?? this.instructions,
+      ingredients: ingredients ?? this.ingredients,
+      isVegetarian: isVegetarian ?? this.isVegetarian,
+      isLactoseFree: isLactoseFree ?? this.isLactoseFree,
+      isFavourite: isFavourite ?? this.isFavourite,
+    );
+  }
 }
