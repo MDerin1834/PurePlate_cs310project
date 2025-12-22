@@ -1,52 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:pure_plate/models/recipe.dart';
+import 'package:pure_plate/models/meal_log.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/services/meal_service.dart';
 
-/// Single meal log entry model
-class MealLog {
-  final String id;
-  final String recipeId;
-  final String recipeName;
-  final int calories;
-  final DateTime loggedAt;
-
-  MealLog({
-    required this.id,
-    required this.recipeId,
-    required this.recipeName,
-    required this.calories,
-    required this.loggedAt,
-  });
-
-  factory MealLog.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
-    return MealLog(
-      id: doc.id,
-      recipeId: data['recipeId'],
-      recipeName: data['recipeName'],
-      calories: data['calories'],
-      loggedAt: (data['loggedAt'] as Timestamp).toDate(),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'recipeId': recipeId,
-      'recipeName': recipeName,
-      'calories': calories,
-      'loggedAt': Timestamp.fromDate(loggedAt),
-    };
-  }
-}
-
-/// Provider responsible for meal logging & calorie tracking
 class MealLogProvider extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final MealService _mealService = MealService();
   final AuthProvider _authProvider;
 
   StreamSubscription? _subscription;
@@ -71,9 +30,9 @@ class MealLogProvider extends ChangeNotifier {
 
     return _mealLogs
         .where((log) =>
-            log.loggedAt.year == today.year &&
-            log.loggedAt.month == today.month &&
-            log.loggedAt.day == today.day)
+    log.createdAt.year == today.year &&
+        log.createdAt.month == today.month &&
+        log.createdAt.day == today.day)
         .fold(0, (sum, log) => sum + log.calories);
   }
 
@@ -91,60 +50,56 @@ class MealLogProvider extends ChangeNotifier {
 
     _subscription?.cancel();
 
-    _subscription = _firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('meal_logs')
-        .orderBy('loggedAt', descending: true)
-        .snapshots()
-        .listen((snapshot) {
-      _mealLogs =
-          snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList();
-
+    _subscription = _mealService.getMeals(user.uid).listen((meals) {
+      _mealLogs = meals;
       _isLoading = false;
       notifyListeners();
     });
   }
 
   // =========================
-  // Add meal to log
+  // CREATE - Add meal to log
   // =========================
 
-  Future<void> logMeal(Recipe recipe) async {
+  Future<void> logMeal(String recipeName, int calories) async {
     final user = _authProvider.user;
     if (user == null) return;
 
-    final docRef = _firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('meal_logs')
-        .doc();
-
-    final log = MealLog(
-      id: docRef.id,
-      recipeId: recipe.id,
-      recipeName: recipe.name,
-      calories: recipe.calories,
-      loggedAt: DateTime.now(),
+    await _mealService.addMeal(
+      userId: user.uid,
+      recipeName: recipeName,
+      calories: calories,
     );
-
-    await docRef.set(log.toMap());
   }
 
   // =========================
-  // Remove meal (optional but useful)
+  // UPDATE - Edit meal
   // =========================
 
-  Future<void> deleteMeal(String logId) async {
+  Future<void> updateMeal(String mealId, String recipeName, int calories) async {
     final user = _authProvider.user;
     if (user == null) return;
 
-    await _firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('meal_logs')
-        .doc(logId)
-        .delete();
+    await _mealService.updateMeal(
+      userId: user.uid,
+      mealId: mealId,
+      recipeName: recipeName,
+      calories: calories,
+    );
+  }
+
+  // =========================
+  // DELETE - Remove meal
+  // =========================
+
+  Future<void> deleteMeal(String mealId) async {
+    final user = _authProvider.user;
+    if (user == null) return;
+
+    await _mealService.deleteMeal(
+      userId: user.uid,
+      mealId: mealId,
+    );
   }
 
   // =========================
