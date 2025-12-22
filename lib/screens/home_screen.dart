@@ -283,6 +283,7 @@ class LogMealViewWidget extends StatelessWidget {
                 await context.read<MealLogProvider>().logMeal(
                   selectedRecipe!.name,
                   selectedRecipe!.calories,
+                  selectedRecipe!.protein,
                 );
 
                 Navigator.pop(dialogContext);

@@ -207,6 +207,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                             await context.read<MealLogProvider>().logMeal(
                               recipe.name,
                               recipe.calories,
+                              recipe.protein,
                             );
 
                             if (context.mounted) {

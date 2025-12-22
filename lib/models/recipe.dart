@@ -5,6 +5,7 @@ class Recipe {
   final String name;
   final String imageURL;
   final int calories;
+  final int protein;
   final int cookingTime;
   final String instructions;
   final List<String> ingredients;
@@ -17,6 +18,7 @@ class Recipe {
     required this.name,
     required this.imageURL,
     required this.calories,
+    required this.protein,
     required this.cookingTime,
     required this.instructions,
     required this.ingredients,
@@ -25,7 +27,6 @@ class Recipe {
     this.isFavourite = false,
   });
 
-  // Convert Firestore document to Recipe
   factory Recipe.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Recipe(
@@ -33,6 +34,7 @@ class Recipe {
       name: data['name'] ?? '',
       imageURL: data['imageURL'] ?? '',
       calories: data['calories'] ?? 0,
+      protein: data['protein'] ?? 0,
       cookingTime: data['cookingTime'] ?? 0,
       instructions: data['instructions'] ?? '',
       ingredients: List<String>.from(data['ingredients'] ?? []),
@@ -42,12 +44,12 @@ class Recipe {
     );
   }
 
-  // Convert Recipe to Map for Firestore
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'imageURL': imageURL,
       'calories': calories,
+      'protein': protein,
       'cookingTime': cookingTime,
       'instructions': instructions,
       'ingredients': ingredients,
@@ -62,6 +64,7 @@ class Recipe {
     String? name,
     String? imageURL,
     int? calories,
+    int? protein,
     int? cookingTime,
     String? instructions,
     List<String>? ingredients,
@@ -74,6 +77,7 @@ class Recipe {
       name: name ?? this.name,
       imageURL: imageURL ?? this.imageURL,
       calories: calories ?? this.calories,
+      protein: protein ?? this.protein,
       cookingTime: cookingTime ?? this.cookingTime,
       instructions: instructions ?? this.instructions,
       ingredients: ingredients ?? this.ingredients,

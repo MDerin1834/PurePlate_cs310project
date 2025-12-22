@@ -9,6 +9,7 @@ const List<Recipe> recipes = [
     imageURL:
         'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg/small',
     calories: 1170,
+    protein: 12,
     cookingTime: 11,
     instructions: '''1 Preheat the oven to 230°C.
 
@@ -56,6 +57,7 @@ const List<Recipe> recipes = [
     imageURL:
         'https://www.themealdb.com/images/media/meals/rjhf741585564676.jpg/small',
     calories: 1163,
+    protein: 35,
     cookingTime: 38,
     instructions:
         '''Pound the garlic with sea salt in a pestle and mortar (or use a small food processor), until the garlic forms a paste. Whisk together the oil, lemon juice, zest, dill and garlic. Mix in the lamb and combine well. Cover and marinate for at least 2 hrs or overnight in the fridge. If you’re going to use bamboo skewers, soak them in cold water.
@@ -80,6 +82,7 @@ If you’ve prepared the lamb the previous day, take it out of the fridge 30 min
     imageURL:
         'https://www.themealdb.com/images/media/meals/prjve31763486864.jpg/small',
     calories: 1342,
+    protein: 30,
     cookingTime: 56,
     instructions: '''step 1
 Fire up the barbecue or heat a griddle pan to high. Tip chicken, curry paste and coconut milk into a bowl, then mix well until the chicken is evenly coated. Thread vegetables and chicken onto skewers. Cook the skewers on the barbecue or griddle for 5-8 mins, turning every so often, until the chicken is cooked through and charred. Serve with herby rice, salad and a lime half to squeeze over.''',
@@ -102,6 +105,7 @@ Fire up the barbecue or heat a griddle pan to high. Tip chicken, curry paste and
     imageURL:
         'https://www.themealdb.com/images/media/meals/cj56fs1762340001.jpg/small',
     calories: 408,
+    protein: 25,
     cookingTime: 20,
     instructions: '''step 1
 Make 3 slashes on each of the drumsticks. Mix together the soy, honey, oil, tomato purée and mustard. Pour this mixture over the chicken and coat thoroughly. Leave to marinate for 30 mins at room temperature or overnight in the fridge. Heat oven to 200C/fan 180C/gas 6.
@@ -126,6 +130,7 @@ Tip the chicken into a shallow roasting tray and cook for 35 mins, turning occas
     imageURL:
         'https://www.themealdb.com/images/media/meals/rsqwus1511640214.jpg/small',
     calories: 1232,
+    protein: 5,
     cookingTime: 40,
     instructions:
         '''Bring out the juices: Wash fruit and gently dry on kitchen paper – keep strawberries separate. Put sugar and 3 tbsp water into a large pan. Gently heat until sugar dissolves – stir a few times. Bring to a boil for 1 min, then tip in the fruit (not strawberries). Cook for 3 mins over a low heat, stirring 2-3 times. The fruit will be softened, mostly intact and surrounded by dark red juice. Put a sieve over a bowl and tip in the fruit and juice.
@@ -150,6 +155,7 @@ Let flavours mingle then serve: Dip the bread triangles in juice and place on to
     imageURL:
         'https://www.themealdb.com/images/media/meals/ssyqwr1511451678.jpg/small',
     calories: 663,
+    protein: 15,
     cookingTime: 43,
     instructions:
         '''Soak the dried mushrooms in 350ml boiling water and set aside until needed. Blitz ¾ of the chestnuts with 150ml water until creamy. Roughly chop the remaining chestnuts.
@@ -182,6 +188,7 @@ Meanwhile, put the breadcrumbs, the last 2 tbsp olive oil, sage leaves and some 
     imageURL:
         'https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg/small',
     calories: 1110,
+    protein: 8,
     cookingTime: 35,
     instructions:
         '''Put the flour, eggs, milk, 1 tbsp oil and a pinch of salt into a bowl or large jug, then whisk to a smooth batter. Set aside for 30 mins to rest if you have time, or start cooking straight away.
@@ -205,6 +212,7 @@ Serve with lemon wedges and sugar, or your favourite filling. Once cold, you can
     imageURL:
         'https://www.themealdb.com/images/media/meals/yvpuuy1511797244.jpg/small',
     calories: 194,
+    protein: 24,
     cookingTime: 46,
     instructions:
         '''Get everything ready. Warm a 20cm (measured across the top) non-stick frying pan on a medium heat. Crack the eggs into a bowl and beat them with a fork so they break up and mix, but not as completely as you would for scrambled egg. With the heat on medium-hot, drop one knob of butter into the pan. It should bubble and sizzle, but not brown. Season the eggs with the Parmesan and a little salt and pepper, and pour into the pan.
@@ -229,6 +237,7 @@ Grip the handle underneath. Tilt the pan down away from you and let the omelette
     imageURL:
         'https://www.themealdb.com/images/media/meals/ampz9v1763787134.jpg/small',
     calories: 1287,
+    protein: 18,
     cookingTime: 8,
     instructions: '''step 1
 Heat oven to 190C/170C fan/gas 5. Halve the aubergines lengthways and score the flesh side deeply, brush with a good layer of olive oil and put on a baking sheet. Roast for 20 mins or until the flesh is soft enough to scoop out.
@@ -269,6 +278,7 @@ Season the lamb with salt, black pepper and a pinch of paprika. Griddle, grill o
     imageURL:
         'https://www.themealdb.com/images/media/meals/gr4lo51763791826.jpg/small',
     calories: 428,
+    protein: 38,
     cookingTime: 21,
     instructions: '''step 1
 Put the lamb into a large food bag with all the juice and marinate overnight.

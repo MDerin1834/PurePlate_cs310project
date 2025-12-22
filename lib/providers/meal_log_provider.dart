@@ -1,114 +1,90 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pure_plate/models/meal_log.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
 import 'package:pure_plate/services/meal_service.dart';
+import 'package:pure_plate/models/meal_log.dart';
+import 'dart:async';
 
 class MealLogProvider extends ChangeNotifier {
-  final MealService _mealService = MealService();
   final AuthProvider _authProvider;
-
-  StreamSubscription? _subscription;
+  final MealService _mealService = MealService();
 
   List<MealLog> _mealLogs = [];
   bool _isLoading = false;
+  StreamSubscription? _mealsSubscription;
 
   MealLogProvider(this._authProvider) {
-    _listenToMealLogs();
+    _init();
   }
-
-  // =========================
-  // Public getters
-  // =========================
 
   List<MealLog> get mealLogs => _mealLogs;
   bool get isLoading => _isLoading;
 
-  /// Total calories consumed today
   int get todayCalories {
     final today = DateTime.now();
-
     return _mealLogs
-        .where((log) =>
-    log.createdAt.year == today.year &&
-        log.createdAt.month == today.month &&
-        log.createdAt.day == today.day)
-        .fold(0, (sum, log) => sum + log.calories);
+        .where((meal) =>
+    meal.createdAt.year == today.year &&
+        meal.createdAt.month == today.month &&
+        meal.createdAt.day == today.day)
+        .fold(0, (sum, meal) => sum + meal.calories);
   }
 
-  // =========================
-  // Firestore stream listener
-  // =========================
+  // ← ADD THIS: Calculate today's protein
+  int get todayProtein {
+    final today = DateTime.now();
+    return _mealLogs
+        .where((meal) =>
+    meal.createdAt.year == today.year &&
+        meal.createdAt.month == today.month &&
+        meal.createdAt.day == today.day)
+        .fold(0, (sum, meal) => sum + meal.protein);
+  }
 
-  void _listenToMealLogs() {
-    final user = _authProvider.user;
+  void _init() {
+    if (_authProvider.user != null) {
+      _loadMeals();
+    }
+  }
 
-    if (user == null) return;
+  void _loadMeals() {
+    final userId = _authProvider.user?.uid;
+    if (userId == null) return;
 
     _isLoading = true;
     notifyListeners();
 
-    _subscription?.cancel();
-
-    _subscription = _mealService.getMeals(user.uid).listen((meals) {
+    _mealsSubscription?.cancel();
+    _mealsSubscription = _mealService.getMeals(userId).listen((meals) {
       _mealLogs = meals;
       _isLoading = false;
       notifyListeners();
     });
   }
 
-  // =========================
-  // CREATE - Add meal to log
-  // =========================
+  Future<void> logMeal(String recipeName, int calories, int protein) async {
+    final userId = _authProvider.user?.uid;
+    if (userId == null) return;
 
-  Future<void> logMeal(String recipeName, int calories) async {
-    final user = _authProvider.user;
-    if (user == null) return;
-
-    await _mealService.addMeal(
-      userId: user.uid,
-      recipeName: recipeName,
-      calories: calories,
-    );
+    await _mealService.addMeal(userId, recipeName, calories, protein);
   }
 
-  // =========================
-  // UPDATE - Edit meal
-  // =========================
+  Future<void> updateMeal(String mealId, String recipeName, int calories, int protein) async {
+    final userId = _authProvider.user?.uid;
+    if (userId == null) return;
 
-  Future<void> updateMeal(String mealId, String recipeName, int calories) async {
-    final user = _authProvider.user;
-    if (user == null) return;
-
-    await _mealService.updateMeal(
-      userId: user.uid,
-      mealId: mealId,
-      recipeName: recipeName,
-      calories: calories,
-    );
+    await _mealService.updateMeal(userId, mealId, recipeName, calories, protein);
   }
-
-  // =========================
-  // DELETE - Remove meal
-  // =========================
 
   Future<void> deleteMeal(String mealId) async {
-    final user = _authProvider.user;
-    if (user == null) return;
+    final userId = _authProvider.user?.uid;
+    if (userId == null) return;
 
-    await _mealService.deleteMeal(
-      userId: user.uid,
-      mealId: mealId,
-    );
+    await _mealService.deleteMeal(userId, mealId);
   }
-
-  // =========================
-  // Cleanup
-  // =========================
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _mealsSubscription?.cancel();
     super.dispose();
   }
 }

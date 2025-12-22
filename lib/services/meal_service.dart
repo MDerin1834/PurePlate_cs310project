@@ -4,12 +4,8 @@ import 'package:pure_plate/models/meal_log.dart';
 class MealService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // ========== CREATE ==========
-  Future<void> addMeal({
-    required String userId,
-    required String recipeName,
-    required int calories,
-  }) async {
+  // CREATE - Add a meal log for a user
+  Future<void> addMeal(String userId, String recipeName, int calories, int protein) async {
     await _firestore
         .collection('users')
         .doc(userId)
@@ -17,12 +13,13 @@ class MealService {
         .add({
       'recipeName': recipeName,
       'calories': calories,
+      'protein': protein,  // ← ADD THIS
       'createdAt': FieldValue.serverTimestamp(),
       'createdBy': userId,
     });
   }
 
-  // ========== READ (Real-time Stream) ==========
+  // READ - Get all meal logs for a user (real-time stream)
   Stream<List<MealLog>> getMeals(String userId) {
     return _firestore
         .collection('users')
@@ -30,18 +27,13 @@ class MealService {
         .collection('meal_logs')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => MealLog.fromFirestore(doc))
-        .toList());
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => MealLog.fromFirestore(doc)).toList();
+    });
   }
 
-  // ========== UPDATE ==========
-  Future<void> updateMeal({
-    required String userId,
-    required String mealId,
-    required String recipeName,
-    required int calories,
-  }) async {
+  // UPDATE - Update a meal log
+  Future<void> updateMeal(String userId, String mealId, String recipeName, int calories, int protein) async {
     await _firestore
         .collection('users')
         .doc(userId)
@@ -50,14 +42,12 @@ class MealService {
         .update({
       'recipeName': recipeName,
       'calories': calories,
+      'protein': protein,  // ← ADD THIS
     });
   }
 
-  // ========== DELETE ==========
-  Future<void> deleteMeal({
-    required String userId,
-    required String mealId,
-  }) async {
+  // DELETE - Delete a meal log
+  Future<void> deleteMeal(String userId, String mealId) async {
     await _firestore
         .collection('users')
         .doc(userId)

@@ -166,6 +166,7 @@ class RecordsScreen extends StatelessWidget {
   void _editMeal(BuildContext context, MealLog meal) {
     final nameController = TextEditingController(text: meal.recipeName);
     final caloriesController = TextEditingController(text: meal.calories.toString());
+    final proteinController = TextEditingController(text: meal.protein.toString());  // ← ADD THIS
 
     showDialog(
       context: context,
@@ -190,6 +191,15 @@ class RecordsScreen extends StatelessWidget {
                 prefixIcon: Icon(Icons.local_fire_department),
               ),
             ),
+            SizedBox(height: 16),
+            TextField(
+              controller: proteinController,  // ← ADD THIS
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Protein (g)',
+                prefixIcon: Icon(Icons.fitness_center),
+              ),
+            ),
           ],
         ),
         actions: [
@@ -201,8 +211,9 @@ class RecordsScreen extends StatelessWidget {
             onPressed: () async {
               final name = nameController.text.trim();
               final caloriesText = caloriesController.text.trim();
+              final proteinText = proteinController.text.trim();  // ← ADD THIS
 
-              if (name.isEmpty || caloriesText.isEmpty) {
+              if (name.isEmpty || caloriesText.isEmpty || proteinText.isEmpty) {  // ← UPDATE THIS
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Please fill in all fields'),
@@ -213,10 +224,12 @@ class RecordsScreen extends StatelessWidget {
               }
 
               final calories = int.tryParse(caloriesText);
-              if (calories == null || calories <= 0) {
+              final protein = int.tryParse(proteinText);  // ← ADD THIS
+
+              if (calories == null || calories <= 0 || protein == null || protein < 0) {  // ← UPDATE THIS
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Please enter valid calories'),
+                    content: Text('Please enter valid values'),
                     backgroundColor: Colors.orange,
                   ),
                 );
@@ -227,6 +240,7 @@ class RecordsScreen extends StatelessWidget {
                 meal.id,
                 name,
                 calories,
+                protein,  // ← ADD THIS
               );
 
               Navigator.pop(dialogContext);
@@ -309,7 +323,7 @@ class RecordsScreen extends StatelessWidget {
 
     // Calculate protein (placeholder - you'd need to track this properly)
     // For now, estimate 1g protein per 20 calories
-    final estimatedProtein = (totalCalories / 20).round();
+    final totalProtein = mealProvider.todayProtein;
 
     return PurePlateAppScaffold(
       pageIndex: 0,
@@ -413,7 +427,7 @@ class RecordsScreen extends StatelessWidget {
             SizedBox(height: 10),
             NutrientProgressCard(
               label: 'Protein',
-              current: estimatedProtein,  // ← CHANGED: Use estimated value
+              current: totalProtein,  // ← CHANGED: Use estimated value
               target: proteinTarget,  // ← CHANGED: Use dynamic value
               color: Colors.blue,
             ),
