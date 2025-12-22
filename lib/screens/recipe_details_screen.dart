@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/models/recipe.dart';
 import 'package:pure_plate/providers/favourites_provider.dart';
+import 'package:pure_plate/providers/scheduled_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
 
@@ -400,6 +401,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                   );
                   if (time != null) {
                     Navigator.pop(context);
+                    context.read<ScheduleProvider>().addToSchedule(recipe, date);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('📅 Meal scheduled for ${date.day}/${date.month} at ${time.format(context)}'),
