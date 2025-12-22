@@ -225,7 +225,7 @@ Grip the handle underneath. Tilt the pan down away from you and let the omelette
   ),
 
   Recipe(
-    name: 'Imam bayildi with BBQ lamb & tzatziki',
+    name: 'Imam bayildi',
     imageURL:
         'https://www.themealdb.com/images/media/meals/ampz9v1763787134.jpg/small',
     calories: 1287,
@@ -265,7 +265,7 @@ Season the lamb with salt, black pepper and a pinch of paprika. Griddle, grill o
   ),
 
   Recipe(
-    name: 'Slow-roast lamb with cinnamon, fennel & citrus',
+    name: 'Slow-roast lamb',
     imageURL:
         'https://www.themealdb.com/images/media/meals/gr4lo51763791826.jpg/small',
     calories: 428,
