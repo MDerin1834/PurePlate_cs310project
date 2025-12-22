@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/utility/validation.dart';
-
-import '../providers/auth_provider.dart';
+import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/providers/user_profile_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,11 +16,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? uploadedImagePath;
   final _formKey = GlobalKey<FormState>();
 
+  final _nameController = TextEditingController();  // ← ADDED
+  final _ageController = TextEditingController();   // ← ADDED
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -32,6 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = context.read<AuthProvider>();
+    final userProfileProvider = context.read<UserProfileProvider>();
 
     await authProvider.register(
       _emailController.text.trim(),
@@ -39,9 +44,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (!mounted) return;
-
-    // Navigation YOK
-    // AuthGate otomatik yönlendirecek
 
     if (authProvider.errorMessage != null) {
       showDialog(
@@ -57,12 +59,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ],
         ),
       );
+    } else {
+      // Create user profile with name and age
+      final user = authProvider.user;
+      if (user != null) {
+        await userProfileProvider.createProfile(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: _nameController.text.trim(),
+          age: int.tryParse(_ageController.text.trim()) ?? 25,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -145,30 +159,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              textInputAction: TextInputAction.next,
-                              decoration: const InputDecoration(
-                                labelText: "Name",
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
-                              validator: Validation.validateNotEmpty,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              textInputAction: TextInputAction.next,
-                              decoration: const InputDecoration(
-                                labelText: "Surname",
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
-                              validator: Validation.validateNotEmpty,
-                            ),
-                          ),
-                        ],
+                      // Name Field (Full Width)
+                      TextFormField(
+                        controller: _nameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: "Name",
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: Validation.validateNotEmpty,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Age Field
+                      TextFormField(
+                        controller: _ageController,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: "Age",
+                          prefixIcon: Icon(Icons.cake_outlined),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your age';
+                          }
+                          final age = int.tryParse(value);
+                          if (age == null || age < 13 || age > 120) {
+                            return 'Please enter a valid age (13-120)';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 16),
 
@@ -213,13 +234,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: authProvider.isLoading ? null : _handleRegister,
                         child: authProvider.isLoading
                             ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
                             : const Text("SIGN UP"),
                       ),
                     ],
