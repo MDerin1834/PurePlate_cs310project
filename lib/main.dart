@@ -6,6 +6,9 @@ import 'package:pure_plate/providers/favourites_provider.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
 import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/providers/user_profile_provider.dart';
+// 1. DÜZELTME: Provider dosya adınızın 'schedule_provider.dart' olduğundan emin olun
+import 'package:pure_plate/providers/scheduled_provider.dart';
+
 import 'package:pure_plate/widgets/auth_gate.dart';
 import 'firebase_options.dart';
 import 'package:pure_plate/screens/onboarding_screen.dart';
@@ -16,10 +19,11 @@ import 'package:pure_plate/screens/home_screen.dart';
 import 'package:pure_plate/screens/recipes_screen.dart';
 import 'package:pure_plate/screens/recipe_filtering_screen.dart';
 import 'package:pure_plate/screens/filtered_recipes_screen.dart';
-import 'package:pure_plate/screens/recipe_details_screen.dart';
 import 'package:pure_plate/screens/profile_screen.dart';
 import 'package:pure_plate/screens/edit_profile_screen.dart';
 import 'package:pure_plate/screens/records_screen.dart';
+// 2. YENİ EKRAN İMPORTU:
+import 'package:pure_plate/screens/scheduled_recipes_screen.dart';
 import 'package:pure_plate/theme.dart';
 
 void main() async {
@@ -34,6 +38,9 @@ void main() async {
           providers: [
             ChangeNotifierProvider(create: (context) => AuthProvider()),
             ChangeNotifierProvider(create: (context) => RecipeProvider()),
+            // 3. PROVIDER KAYDI:
+            ChangeNotifierProvider(create: (context) => ScheduleProvider()),
+
             ChangeNotifierProxyProvider<AuthProvider, MealLogProvider>(
               create: (context) => MealLogProvider(context.read<AuthProvider>()),
               update: (context, auth, previous) => MealLogProvider(auth),
@@ -60,6 +67,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: purePlateTheme,
       initialRoute: '/',
+      debugShowCheckedModeBanner: false, // Debug bandını kapatmak isterseniz
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
@@ -70,10 +78,12 @@ class MyApp extends StatelessWidget {
         '/recipes': (context) => const RecipesScreen(),
         '/filter': (context) => const RecipeFilteringScreen(),
         '/filtered': (context) => const FilteredRecipesScreen(),
-        '/recipe-details': (context) => const RecipeDetailsScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/edit-profile': (context) => const EditProfileScreen(),
         '/records': (context) => const RecordsScreen(),
+        // 4. YENİ ROTA (ROUTE):
+        // Eğer ScheduledRecipesScreen içinde const constructor varsa 'const' ekleyebilirsiniz.
+        '/scheduled': (context) => const ScheduledRecipesScreen(),
       },
     );
   }

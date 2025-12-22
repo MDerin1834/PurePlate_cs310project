@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
@@ -104,47 +105,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: TextStyle(
+            color: Colors.white70,
             fontWeight: FontWeight.w600,
-            color: theme.colorScheme.primary,
+            fontSize: 14,
           ),
         ),
-        SizedBox(height: 5),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 2,
-              ),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white24),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              hintStyle: TextStyle(color: Colors.white30),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 2,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 3,
-              ),
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
         ),
       ],
@@ -156,19 +143,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required bool value,
     required Function(bool) onChanged,
   }) {
-    final theme = Theme.of(context);
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: theme.textTheme.bodyLarge,
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: theme.colorScheme.primary,
+          activeColor: Colors.tealAccent,
+          inactiveTrackColor: Colors.white10,
         ),
       ],
     );
@@ -176,233 +162,323 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final userProfileProvider = context.watch<UserProfileProvider>();
 
     if (userProfileProvider.isLoading || !_isInitialized) {
       return PurePlateAppScaffold(
         pageIndex: 2,
-        body: Center(child: CircularProgressIndicator()),
+        body: Stack(
+          children: [
+            Positioned.fill(child: Container(color: Colors.black)),
+            Center(child: CircularProgressIndicator(color: Colors.tealAccent)),
+          ],
+        ),
       );
     }
 
     return PurePlateAppScaffold(
       pageIndex: 2,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Header
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                Expanded(
-                  child: Text(
-                    'Edit Profile',
-                    style: theme.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(width: 48),
-              ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1353',
+              fit: BoxFit.cover,
             ),
-            SizedBox(height: 20),
-
-            // Profile Image
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundColor: theme.colorScheme.primary,
-                  child: Icon(
-                    Icons.account_circle,
-                    size: 120,
-                    color: Colors.white,
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    backgroundColor: theme.colorScheme.primary,
-                    radius: 20,
-                    child: IconButton(
-                      icon: Icon(Icons.camera_alt, size: 20, color: Colors.white),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Image picker not implemented yet')),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 30),
-
-            // Editable Fields
-            _buildTextField(
-              label: 'Name',
-              controller: _nameController,
-            ),
-            SizedBox(height: 15),
-
-            _buildTextField(
-              label: 'Age',
-              controller: _ageController,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 15),
-
-            _buildTextField(
-              label: 'Diet Type',
-              controller: _dietTypeController,
-            ),
-            SizedBox(height: 15),
-
-            _buildTextField(
-              label: 'Calorie Target',
-              controller: _calorieTargetController,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 25),
-
-            // Dietary Preferences Block
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
+          ),
+          Positioned.fill(
+            child: Container(
               decoration: BoxDecoration(
-                color: theme.colorScheme.secondary.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: theme.colorScheme.primary,
-                  width: 3,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.95),
+                  ],
+                  stops: const [0.0, 0.4, 1.0],
                 ),
               ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.restaurant_menu,
-                        color: theme.colorScheme.primary,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Dietary Preferences',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                      Expanded(
+                        child: Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.0,
+                            shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(width: 48),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+
+                  Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.tealAccent.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            )
+                          ],
+                          border: Border.all(color: Colors.tealAccent, width: 2),
+                        ),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.black54,
+                          child: Icon(
+                            Icons.person,
+                            size: 80,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.tealAccent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.camera_alt, size: 20, color: Colors.black),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Image picker not implemented yet')),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    'These preferences affect recipe recommendations',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  _buildPreferenceSwitch(
-                    label: 'Gluten-free',
-                    value: _isGlutenFree,
-                    onChanged: (val) => setState(() => _isGlutenFree = val),
-                  ),
-                  Divider(),
-                  _buildPreferenceSwitch(
-                    label: 'Vegetarian',
-                    value: _isVegetarian,
-                    onChanged: (val) => setState(() => _isVegetarian = val),
-                  ),
-                  Divider(),
-                  _buildPreferenceSwitch(
-                    label: 'Lactose-free',
-                    value: _isLactoseFree,
-                    onChanged: (val) => setState(() => _isLactoseFree = val),
-                  ),
-                  Divider(),
-                  _buildPreferenceSwitch(
-                    label: 'Low-carb',
-                    value: _isLowCarb,
-                    onChanged: (val) => setState(() => _isLowCarb = val),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 25),
+                  SizedBox(height: 30),
 
-            // Protein Target
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.green.shade700,
-                  width: 3,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.flag,
-                        color: Colors.green.shade700,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Daily Goals',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade900,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.white.withOpacity(0.15)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Personal Details',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              label: 'Name',
+                              controller: _nameController,
+                            ),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              label: 'Age',
+                              controller: _ageController,
+                              keyboardType: TextInputType.number,
+                            ),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              label: 'Diet Type',
+                              controller: _dietTypeController,
+                            ),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              label: 'Calorie Target',
+                              controller: _calorieTargetController,
+                              keyboardType: TextInputType.number,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 15),
-                  _buildTextField(
-                    label: 'Daily Protein Target (g)',
-                    controller: _proteinTargetController,
-                    keyboardType: TextInputType.number,
+                  SizedBox(height: 20),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: Colors.teal.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.restaurant_menu, color: Colors.tealAccent),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Dietary Preferences',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'These affect recommendations',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontStyle: FontStyle.italic,
+                                fontSize: 12,
+                              ),
+                            ),
+                            SizedBox(height: 15),
+                            _buildPreferenceSwitch(
+                              label: 'Gluten-free',
+                              value: _isGlutenFree,
+                              onChanged: (val) => setState(() => _isGlutenFree = val),
+                            ),
+                            Divider(color: Colors.white24),
+                            _buildPreferenceSwitch(
+                              label: 'Vegetarian',
+                              value: _isVegetarian,
+                              onChanged: (val) => setState(() => _isVegetarian = val),
+                            ),
+                            Divider(color: Colors.white24),
+                            _buildPreferenceSwitch(
+                              label: 'Lactose-free',
+                              value: _isLactoseFree,
+                              onChanged: (val) => setState(() => _isLactoseFree = val),
+                            ),
+                            Divider(color: Colors.white24),
+                            _buildPreferenceSwitch(
+                              label: 'Low-carb',
+                              value: _isLowCarb,
+                              onChanged: (val) => setState(() => _isLowCarb = val),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
+                  SizedBox(height: 20),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: Colors.orangeAccent.withOpacity(0.5),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.flag,
+                                  color: Colors.orangeAccent,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Daily Goals',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 15),
+                            _buildTextField(
+                              label: 'Daily Protein Target (g)',
+                              controller: _proteinTargetController,
+                              keyboardType: TextInputType.number,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: _saveChanges,
+                      icon: Icon(Icons.save),
+                      label: Text(
+                        'Save Changes',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.tealAccent,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
                 ],
               ),
             ),
-            SizedBox(height: 30),
-
-            // Save Changes Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: _saveChanges,
-                icon: Icon(Icons.save),
-                label: Text(
-                  'Save Changes',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade700,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

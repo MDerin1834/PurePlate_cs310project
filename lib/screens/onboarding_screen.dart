@@ -30,17 +30,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
           if (_currentPage == 1)
             Positioned(
-              top: 50,
+              top: 0,
               left: 20,
-              child: IconButton(
-                onPressed: () {
-                  _controller.previousPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOutCubic,
-                  );
-                },
-                icon: const Icon(Icons.arrow_back_ios_new),
-                color: Colors.grey,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white.withOpacity(0.5),
+                    child: IconButton(
+                      onPressed: () {
+                        _controller.previousPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOutCubic,
+                        );
+                      },
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                      color: const Color(0xFF2D6A4F),
+                    ),
+                  ),
+                ),
               ),
             ),
 
@@ -62,7 +70,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeInOutCubic,
                       );
                     } else {
-                      // Navigate to login screen instead of placeholder
                       Navigator.pushReplacementNamed(context, '/login');
                     }
                   },
@@ -124,6 +131,19 @@ class FeaturesPage extends StatelessWidget {
                     child: Image.network(
                       'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900',
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(
+                            child: CircularProgressIndicator(
+                                color: Color(0xFF2D6A4F)));
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: const Color(0xFFD8F3DC),
+                          child: const Icon(Icons.broken_image,
+                              color: Color(0xFF2D6A4F), size: 50),
+                        );
+                      },
                     ),
                   ),
                   Container(
@@ -164,7 +184,8 @@ class FeaturesPage extends StatelessWidget {
                   ModernFeatureItem(
                     icon: Icons.health_and_safety_outlined,
                     title: "Calorie Tracking",
-                    subtitle: "Balanced nutrition analysis to reach your goals.",
+                    subtitle:
+                    "Balanced nutrition analysis to reach your goals.",
                     color: Color(0xFF52B788),
                   ),
                 ],
