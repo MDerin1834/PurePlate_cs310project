@@ -1,36 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
-
-// MealRecord Model Class
-class MealRecord {
-  final String mealName;
-  final int calories;
-  final String time;
-
-  const MealRecord({
-    required this.mealName,
-    required this.calories,
-    required this.time,
-  });
-}
+import 'package:pure_plate/providers/meal_log_provider.dart';
+import 'package:pure_plate/models/meal_log.dart';
+import 'package:intl/intl.dart';
 
 class DailyRecordCard extends StatelessWidget {
-  final String mealName;
-  final int calories;
-  final String time;
+  final MealLog meal;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const DailyRecordCard({
-    required this.mealName,
-    required this.calories,
-    required this.time,
+    required this.meal,
     this.onDelete,
+    this.onEdit,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final timeFormat = DateFormat('h:mm a');
 
     return Card(
       margin: EdgeInsets.symmetric(vertical: 6),
@@ -51,12 +41,12 @@ class DailyRecordCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          mealName,
+          meal.recipeName,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: Text(time),
+        subtitle: Text(timeFormat.format(meal.createdAt)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -68,13 +58,21 @@ class DailyRecordCard extends StatelessWidget {
                 border: Border.all(color: Colors.orange, width: 1.5),
               ),
               child: Text(
-                '$calories kcal',
+                '${meal.calories} kcal',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.orange.shade900,
                 ),
               ),
             ),
+            if (onEdit != null) ...[
+              SizedBox(width: 8),
+              IconButton(
+                icon: Icon(Icons.edit_outlined, color: Colors.blue),
+                onPressed: onEdit,
+                tooltip: 'Edit meal',
+              ),
+            ],
             if (onDelete != null) ...[
               SizedBox(width: 8),
               IconButton(
@@ -161,124 +159,122 @@ class NutrientProgressCard extends StatelessWidget {
   }
 }
 
-class AchievementBadge extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color color;
-
-  const AchievementBadge({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.color,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Container(
-        width: 140,
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: color.withOpacity(0.2),
-              child: Icon(icon, color: color, size: 30),
-            ),
-            SizedBox(height: 12),
-            Text(
-              title,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 4),
-            Text(
-              description,
-              style: theme.textTheme.bodySmall,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RecordsScreen extends StatefulWidget {
+class RecordsScreen extends StatelessWidget {
   const RecordsScreen({super.key});
 
-  @override
-  State<RecordsScreen> createState() => _RecordsScreenState();
-}
-
-class _RecordsScreenState extends State<RecordsScreen> {
-  // Initial meals list
-  List<MealRecord> todaysMeals = [
-    MealRecord(
-      mealName: 'Pizza Express Margherita',
-      calories: 1170,
-      time: '08:30 AM',
-    ),
-    MealRecord(
-      mealName: 'Lamb and Lemon Souvlaki',
-      calories: 1163,
-      time: '01:00 PM',
-    ),
-    MealRecord(
-      mealName: 'Sticky Chicken',
-      calories: 408,
-      time: '07:30 PM',
-    ),
-  ];
-
-  // Calculate total calories dynamically
-  int _calculateTotalCalories() {
-    return todaysMeals.fold(0, (sum, meal) => sum + meal.calories);
-  }
-
-  // Delete meal with confirmation dialog
-  void _deleteMeal(int index) {
-    final mealToDelete = todaysMeals[index];
+  void _editMeal(BuildContext context, MealLog meal) {
+    final nameController = TextEditingController(text: meal.recipeName);
+    final caloriesController = TextEditingController(text: meal.calories.toString());
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Meal'),
-          content: Text(
-            'Are you sure you want to delete "${mealToDelete.mealName}"?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Edit Meal'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Meal Name',
+                prefixIcon: Icon(Icons.restaurant),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  todaysMeals.removeAt(index);
-                });
-                Navigator.of(context).pop();
+            SizedBox(height: 16),
+            TextField(
+              controller: caloriesController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Calories',
+                prefixIcon: Icon(Icons.local_fire_department),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              final caloriesText = caloriesController.text.trim();
+
+              if (name.isEmpty || caloriesText.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Meal deleted successfully'),
+                    content: Text('Please fill in all fields'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+
+              final calories = int.tryParse(caloriesText);
+              if (calories == null || calories <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please enter valid calories'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+
+              // Update meal in Firestore
+              await context.read<MealLogProvider>().updateMeal(
+                meal.id,
+                name,
+                calories,
+              );
+
+              Navigator.pop(dialogContext);
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('✅ Meal updated!'),
                     backgroundColor: Colors.green,
                     duration: Duration(seconds: 2),
                   ),
                 );
+              }
+            },
+            child: Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteMeal(BuildContext context, String mealId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Delete Meal'),
+          content: Text('Are you sure you want to delete this meal?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await context.read<MealLogProvider>().deleteMeal(mealId);
+
+                Navigator.of(dialogContext).pop();
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Meal deleted successfully'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
               },
               child: Text(
                 'Delete',
@@ -294,11 +290,23 @@ class _RecordsScreenState extends State<RecordsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final totalCalories = _calculateTotalCalories();
+    final mealProvider = context.watch<MealLogProvider>();
+
+    // Get today's meals
+    final today = DateTime.now();
+    final todayMeals = mealProvider.mealLogs.where((meal) {
+      return meal.createdAt.year == today.year &&
+          meal.createdAt.month == today.month &&
+          meal.createdAt.day == today.day;
+    }).toList();
+
+    final totalCalories = mealProvider.todayCalories;
 
     return PurePlateAppScaffold(
       pageIndex: 0,
-      body: SingleChildScrollView(
+      body: mealProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,7 +328,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
                     await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
-                      firstDate: DateTime.now().subtract(Duration(days: 365)),
+                      firstDate:
+                      DateTime.now().subtract(Duration(days: 365)),
                       lastDate: DateTime.now(),
                     );
                   },
@@ -329,16 +338,15 @@ class _RecordsScreenState extends State<RecordsScreen> {
             ),
             SizedBox(height: 10),
             Text(
-              "Today's Meals (${todaysMeals.length})",
+              "Today's Meals (${todayMeals.length})",
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             SizedBox(height: 15),
 
-            // Today's Meals - Dynamic List
-            if (todaysMeals.isEmpty)
-            // Empty state
+            // Today's Meals - From Firestore
+            if (todayMeals.isEmpty)
               Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 40),
@@ -356,20 +364,23 @@ class _RecordsScreenState extends State<RecordsScreen> {
                           color: Colors.grey,
                         ),
                       ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Tap "Log Meal" on the home screen to add one!',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               )
             else
-            // Meals list with delete buttons
-              ...todaysMeals.asMap().entries.map((entry) {
-                final index = entry.key;
-                final meal = entry.value;
+              ...todayMeals.map((meal) {
                 return DailyRecordCard(
-                  mealName: meal.mealName,
-                  calories: meal.calories,
-                  time: meal.time,
-                  onDelete: () => _deleteMeal(index),
+                  meal: meal,
+                  onEdit: () => _editMeal(context, meal),
+                  onDelete: () => _deleteMeal(context, meal.id),
                 );
               }),
 
@@ -386,7 +397,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
 
             NutrientProgressCard(
               label: 'Calories',
-              current: totalCalories, // Dynamic calculation
+              current: totalCalories,
               target: 2000,
               color: Colors.orange,
             ),
@@ -402,7 +413,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
             Divider(thickness: 2, color: theme.colorScheme.primary),
             SizedBox(height: 20),
 
-            // Weekly & Monthly Track
+            // Weekly Summary
             Text(
               'Weekly & Monthly Track',
               style: theme.textTheme.titleLarge?.copyWith(
@@ -411,7 +422,6 @@ class _RecordsScreenState extends State<RecordsScreen> {
             ),
             SizedBox(height: 15),
 
-            // Weekly Summary
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -443,55 +453,12 @@ class _RecordsScreenState extends State<RecordsScreen> {
                       ],
                     ),
                     SizedBox(height: 12),
-                    _buildStatRow(context, 'Days on track', '5/7', Colors.green),
-                    _buildStatRow(context, 'Avg. calories', '1850 kcal', Colors.orange),
-                    _buildStatRow(context, 'Avg. protein', '75g', Colors.blue),
+                    _buildStatRow(context, 'Total meals logged',
+                        '${mealProvider.mealLogs.length}', Colors.green),
+                    _buildStatRow(context, 'Avg. calories',
+                        '${totalCalories > 0 ? totalCalories : 0} kcal', Colors.orange),
                   ],
                 ),
-              ),
-            ),
-
-            SizedBox(height: 30),
-
-            // Achievements
-            Text(
-              'Achievements & Badges',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 15),
-
-            SizedBox(
-              height: 180,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  AchievementBadge(
-                    icon: Icons.local_fire_department,
-                    title: '7 Day Streak',
-                    description: 'Logged meals for 7 days',
-                    color: Colors.orange,
-                  ),
-                  AchievementBadge(
-                    icon: Icons.emoji_events,
-                    title: 'Goal Master',
-                    description: 'Hit calorie goal 5x',
-                    color: Colors.amber,
-                  ),
-                  AchievementBadge(
-                    icon: Icons.eco,
-                    title: 'Veggie Lover',
-                    description: 'Tried 10 veggie meals',
-                    color: Colors.green,
-                  ),
-                  AchievementBadge(
-                    icon: Icons.favorite,
-                    title: 'Health Hero',
-                    description: 'Stayed on track',
-                    color: Colors.red,
-                  ),
-                ],
               ),
             ),
 
@@ -502,7 +469,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
     );
   }
 
-  Widget _buildStatRow(BuildContext context, String label, String value, Color color) {
+  Widget _buildStatRow(
+      BuildContext context, String label, String value, Color color) {
     final theme = Theme.of(context);
 
     return Padding(
