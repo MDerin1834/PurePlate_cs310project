@@ -1,9 +1,10 @@
-import 'dart:ui';
+import 'dart:ui'; // Blur efekti için gerekli
 import 'package:flutter/material.dart';
 import 'package:pure_plate/models/filter.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/data/ingredients.dart';
 
+// 1. DÜZENLEME: SettingsContainer artık "Glass" görünümlü
 class SettingsContainer extends StatelessWidget {
   final Widget body;
   final String title;
@@ -21,7 +22,7 @@ class SettingsContainer extends StatelessWidget {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.tealAccent,
+              color: Colors.tealAccent, // Başlıklar Neon Yeşil
             ),
           ),
         ),
@@ -33,9 +34,9 @@ class SettingsContainer extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withOpacity(0.1), // Yarı saydam beyaz
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white12),
+                border: Border.all(color: Colors.white12), // İnce çerçeve
               ),
               child: body,
             ),
@@ -46,6 +47,7 @@ class SettingsContainer extends StatelessWidget {
   }
 }
 
+// 2. DÜZENLEME: PreferenceWidget renkleri güncellendi
 class PreferenceWidget extends StatelessWidget {
   final String label;
   final bool value;
@@ -66,14 +68,14 @@ class PreferenceWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label,
+            label, 
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.black,
-            activeTrackColor: Colors.tealAccent,
+            activeColor: Colors.black, // Switch topu siyah
+            activeTrackColor: Colors.tealAccent, // Switch zemini yeşil
             inactiveThumbColor: Colors.grey,
             inactiveTrackColor: Colors.white24,
           ),
@@ -107,9 +109,10 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
   @override
   Widget build(BuildContext context) {
     return PurePlateAppScaffold(
-      pageIndex: 1,
+      pageIndex: 1, // Recipes sekmesi
       body: Stack(
         children: [
+          // 3. DÜZENLEME: Arka Plan (Diğer sayfalarla aynı)
           Positioned.fill(
             child: Image.network(
               'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1353',
@@ -131,6 +134,8 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
               ),
             ),
           ),
+          
+          // İçerik
           SafeArea(
             child: Column(
               children: [
@@ -152,6 +157,8 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10),
+                        
+                        // --- MAX CALORIES ---
                         SettingsContainer(
                           title: 'Max Calories',
                           body: Column(
@@ -159,14 +166,14 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Icon(Icons.local_fire_department,
-                                      color: Colors.orangeAccent),
+                                  const Icon(Icons.local_fire_department, color: Colors.orangeAccent),
                                   Text(
                                     '${filter.maxCalories} kcal',
                                     style: const TextStyle(
-                                        color: Colors.orangeAccent,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
+                                      color: Colors.orangeAccent, 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18
+                                    ),
                                   ),
                                 ],
                               ),
@@ -175,10 +182,8 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                                   activeTrackColor: Colors.tealAccent,
                                   inactiveTrackColor: Colors.white24,
                                   thumbColor: Colors.tealAccent,
-                                  overlayColor:
-                                      Colors.tealAccent.withOpacity(0.2),
-                                  valueIndicatorTextStyle:
-                                      const TextStyle(color: Colors.black),
+                                  overlayColor: Colors.tealAccent.withOpacity(0.2),
+                                  valueIndicatorTextStyle: const TextStyle(color: Colors.black),
                                 ),
                                 child: Slider(
                                   value: filter.maxCalories.toDouble(),
@@ -186,14 +191,17 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                                   max: 2000,
                                   divisions: 19,
                                   label: filter.maxCalories.toString(),
-                                  onChanged: (val) => setState(
-                                      () => filter.maxCalories = val.round()),
+                                  onChanged: (val) =>
+                                      setState(() => filter.maxCalories = val.round()),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        
                         const SizedBox(height: 24),
+
+                        // --- COOKING TIME ---
                         SettingsContainer(
                           title: 'Max Cooking Time',
                           body: Column(
@@ -201,14 +209,14 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Icon(Icons.timer,
-                                      color: Colors.blueAccent),
+                                  const Icon(Icons.timer, color: Colors.blueAccent),
                                   Text(
                                     '${filter.cookingTime} min',
                                     style: const TextStyle(
-                                        color: Colors.blueAccent,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
+                                      color: Colors.blueAccent, 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18
+                                    ),
                                   ),
                                 ],
                               ),
@@ -224,14 +232,17 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                                   max: 120,
                                   divisions: 23,
                                   label: filter.cookingTime.toString(),
-                                  onChanged: (val) => setState(
-                                      () => filter.cookingTime = val.round()),
+                                  onChanged: (val) =>
+                                      setState(() => filter.cookingTime = val.round()),
                                 ),
                               ),
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 24),
+
+                        // --- INGREDIENTS ---
                         SettingsContainer(
                           title: 'Available Ingredients',
                           body: Column(
@@ -241,20 +252,17 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'Search ingredients...',
-                                  hintStyle:
-                                      const TextStyle(color: Colors.white38),
+                                  hintStyle: const TextStyle(color: Colors.white38),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.05),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide.none,
                                   ),
-                                  prefixIcon: const Icon(Icons.search,
-                                      color: Colors.tealAccent),
+                                  prefixIcon: const Icon(Icons.search, color: Colors.tealAccent),
                                   suffixIcon: IconButton(
                                     onPressed: () => _controller.clear(),
-                                    icon: const Icon(Icons.clear,
-                                        color: Colors.white54),
+                                    icon: const Icon(Icons.clear, color: Colors.white54),
                                   ),
                                 ),
                               ),
@@ -262,43 +270,38 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                               SizedBox(
                                 height: 180,
                                 child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 10,
                                     crossAxisSpacing: 10,
-                                    childAspectRatio: 3,
+                                    childAspectRatio: 3, // Daha yatay butonlar
                                   ),
                                   itemCount: ingredients.length,
                                   itemBuilder: (context, index) {
                                     final s = ingredients[index];
-                                    final isSelected =
-                                        filter.ingredients.contains(s);
-
+                                    final isSelected = filter.ingredients.contains(s);
+                                    
+                                    // 4. DÜZENLEME: ToggleButtons yerine özel tasarım butonlar
                                     return GestureDetector(
                                       onTap: () => _toggleIngredient(s),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? Colors.tealAccent
+                                          color: isSelected 
+                                              ? Colors.tealAccent 
                                               : Colors.white.withOpacity(0.05),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.tealAccent
-                                                  : Colors.white24),
+                                            color: isSelected 
+                                                ? Colors.tealAccent 
+                                                : Colors.white24
+                                          ),
                                         ),
                                         alignment: Alignment.center,
                                         child: Text(
                                           s,
                                           style: TextStyle(
-                                            color: isSelected
-                                                ? Colors.black
-                                                : Colors.white70,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
+                                            color: isSelected ? Colors.black : Colors.white70,
+                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -310,7 +313,10 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 24),
+
+                        // --- PREFERENCES ---
                         SettingsContainer(
                           title: 'Dietary Preferences',
                           body: Column(
@@ -318,27 +324,25 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
                               PreferenceWidget(
                                 label: 'Gluten-free',
                                 value: filter.isGlutenFree,
-                                onChanged: (val) =>
-                                    setState(() => filter.isGlutenFree = val),
+                                onChanged: (val) => setState(() => filter.isGlutenFree = val),
                               ),
                               const Divider(color: Colors.white10),
                               PreferenceWidget(
                                 label: 'Vegetarian',
                                 value: filter.isVegetarian,
-                                onChanged: (val) =>
-                                    setState(() => filter.isVegetarian = val),
+                                onChanged: (val) => setState(() => filter.isVegetarian = val),
                               ),
                               const Divider(color: Colors.white10),
                               PreferenceWidget(
                                 label: 'Lactose-free',
                                 value: filter.isLactoseFree,
-                                onChanged: (val) =>
-                                    setState(() => filter.isLactoseFree = val),
+                                onChanged: (val) => setState(() => filter.isLactoseFree = val),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 100),
+                        
+                        const SizedBox(height: 100), // FAB için boşluk
                       ],
                     ),
                   ),
@@ -348,6 +352,7 @@ class _RecipeFilteringScreen extends State<RecipeFilteringScreen> {
           ),
         ],
       ),
+      
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
