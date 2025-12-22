@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pure_plate/utility/validation.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
-import 'package:pure_plate/providers/user_profile_provider.dart';
+import 'package:pure_plate/services/user_service.dart';
+import 'package:pure_plate/services/preferences_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,14 +12,14 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool _isPasswordVisible = false;
-  String? uploadedImagePath;
-  final _formKey = GlobalKey<FormState>();
-
-  final _nameController = TextEditingController();  // ← ADDED
-  final _ageController = TextEditingController();   // ← ADDED
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -27,228 +27,338 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _ageController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleRegister() async {
-    FocusScope.of(context).unfocus();
+  String? _validateAge(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your age';
+    }
+    final age = int.tryParse(value);
+    if (age == null) {
+      return 'Please enter a valid number';
+    }
+    if (age < 13 || age > 120) {
+      return 'Age must be between 13 and 120';
+    }
+    return null;
+  }
 
-    if (!_formKey.currentState!.validate()) return;
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value != _passwordController.text) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
+  Future<void> _handleRegister() async {
+    // Validate all fields
+    if (_nameController.text.trim().isEmpty) {
+      _showError('Please enter your name');
+      return;
+    }
+
+    final ageError = _validateAge(_ageController.text);
+    if (ageError != null) {
+      _showError(ageError);
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      _showError('Please enter your email');
+      return;
+    }
+
+    final passwordError = _validatePassword(_passwordController.text);
+    if (passwordError != null) {
+      _showError(passwordError);
+      return;
+    }
+
+    final confirmError = _validateConfirmPassword(_confirmPasswordController.text);
+    if (confirmError != null) {
+      _showError(confirmError);
+      return;
+    }
 
     final authProvider = context.read<AuthProvider>();
-    final userProfileProvider = context.read<UserProfileProvider>();
 
+    // Register user
     await authProvider.register(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
 
-    if (!mounted) return;
-
-    if (authProvider.errorMessage != null) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Registration Failed'),
-          content: Text(authProvider.errorMessage!),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Create user profile with name and age
-      final user = authProvider.user;
-      if (user != null) {
-        await userProfileProvider.createProfile(
-          uid: user.uid,
-          email: user.email ?? '',
+    if (authProvider.user != null) {
+      // Create user profile in Firestore
+      try {
+        await UserService().createUserProfile(
+          uid: authProvider.user!.uid,
+          email: _emailController.text.trim(),
           name: _nameController.text.trim(),
-          age: int.tryParse(_ageController.text.trim()) ?? 25,
+          age: int.parse(_ageController.text),
         );
+
+        // Mark onboarding as completed
+        await PreferencesService().setOnboardingCompleted();
+
+        if (context.mounted) {
+          // Navigate to home
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } catch (e) {
+        if (context.mounted) {
+          _showError('Failed to create profile: $e');
+        }
       }
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[700],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Color(0xFF2D6A4F),
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.primary),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  "Create Account",
-                  style: TextStyle(
-                    fontSize: 28,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Logo
+              Center(
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.restaurant_menu,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Title
+              Center(
+                child: Text(
+                  'Create Account',
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey[900],
+                    color: theme.colorScheme.primary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  "Join PurePlate today.",
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 30),
+              ),
 
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() => uploadedImagePath = "selected");
-                    },
-                    child: Stack(
-                      children: [
-                        Hero(
-                          tag: 'profile-pic',
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: const Color(0xFFE8F5E9),
-                            child: Icon(
-                              uploadedImagePath == null
-                                  ? Icons.person_rounded
-                                  : Icons.check_rounded,
-                              size: 50,
-                              color: const Color(0xFF2D6A4F),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF2D6A4F),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 8),
+
+              Center(
+                child: Text(
+                  'Sign up to get started',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Name Field
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'Enter your name',
+                  prefixIcon: const Icon(Icons.person_outline),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Age Field
+              TextField(
+                controller: _ageController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Age',
+                  hintText: 'Enter your age',
+                  prefixIcon: const Icon(Icons.cake_outlined),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Email Field
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Password Field
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
                   ),
                 ),
-                const SizedBox(height: 30),
+              ),
 
-                Form(
-                  key: _formKey,
-                  child: Column(
+              const SizedBox(height: 16),
+
+              // Confirm Password Field
+              TextField(
+                controller: _confirmPasswordController,
+                obscureText: _obscureConfirmPassword,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  hintText: 'Re-enter your password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Error Message
+              if (authProvider.errorMessage?.isNotEmpty ?? false)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red[300]!),
+                  ),
+                  child: Row(
                     children: [
-                      // Name Field (Full Width)
-                      TextFormField(
-                        controller: _nameController,
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: "Name",
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: Validation.validateNotEmpty,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Age Field
-                      TextFormField(
-                        controller: _ageController,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: "Age",
-                          prefixIcon: Icon(Icons.cake_outlined),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your age';
-                          }
-                          final age = int.tryParse(value);
-                          if (age == null || age < 13 || age > 120) {
-                            return 'Please enter a valid age (13-120)';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: "Email",
-                          prefixIcon: Icon(Icons.email_outlined),
-                        ),
-                        validator: Validation.validateEmail,
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        textInputAction: TextInputAction.done,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
+                      Icon(Icons.error_outline, color: Colors.red[700]),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          authProvider.errorMessage ?? '',
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontWeight: FontWeight.w500,
                           ),
-                          errorMaxLines: 2,
                         ),
-                        validator: Validation.validatePassword,
-                      ),
-                      const SizedBox(height: 32),
-
-                      ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _handleRegister,
-                        child: authProvider.isLoading
-                            ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                            : const Text("SIGN UP"),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-              ],
-            ),
+
+              // Register Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : _handleRegister,
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                      : const Text(
+                    'Create Account',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Already have account
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Already have an account? ',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Sign In',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
