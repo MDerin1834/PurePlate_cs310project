@@ -495,8 +495,17 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final recipeProvider = context.watch<RecipeProvider>();
     final scheduleProvider = context.watch<ScheduleProvider>();
-    final scheduledRecipes = scheduleProvider.scheduledRecipes;
+
+    final scheduledRecipesIDs = scheduleProvider.scheduledRecipes;
+    final scheduledRecipes = recipeProvider.recipes.where((r) {
+      for (final ids in scheduledRecipesIDs) {
+        if (r.name == ids.recipeId) return true; // TODO: use r.id instead of r.name
+      }
+
+      return false;
+    }).toList();
 
     return PurePlateAppScaffold(
       pageIndex: 0,

@@ -38,9 +38,11 @@ void main() async {
           providers: [
             ChangeNotifierProvider(create: (context) => AuthProvider()),
             ChangeNotifierProvider(create: (context) => RecipeProvider()),
-            // 3. PROVIDER KAYDI:
-            ChangeNotifierProvider(create: (context) => ScheduleProvider()),
 
+            ChangeNotifierProxyProvider<AuthProvider, ScheduleProvider>(
+              create: (context) => ScheduleProvider(context.read<AuthProvider>()),
+              update: (context, auth, previous) => ScheduleProvider(auth),
+            ),
             ChangeNotifierProxyProvider<AuthProvider, MealLogProvider>(
               create: (context) => MealLogProvider(context.read<AuthProvider>()),
               update: (context, auth, previous) => MealLogProvider(auth),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pure_plate/models/recipe.dart';
+import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/providers/scheduled_provider.dart';
 import 'package:pure_plate/screens/recipe_details_screen.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
@@ -10,8 +12,17 @@ class ScheduledRecipesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Provider'ı dinle (watch kullanarak değişiklikleri takip et)
+    final recipeProvider = context.watch<RecipeProvider>();
     final scheduleProvider = context.watch<ScheduleProvider>();
-    final scheduledRecipes = scheduleProvider.scheduledRecipes;
+    final scheduledRecipesIDs = scheduleProvider.scheduledRecipes;
+
+    final scheduledRecipes = recipeProvider.recipes.where((r) {
+      for (final ids in scheduledRecipesIDs) {
+        if (r.name == ids.recipeId) return true; // TODO: use r.id instead of r.name
+      }
+
+      return false;
+    }).toList();
 
     return PurePlateAppScaffold(
       pageIndex: 1, // Alt menüde hangi ikonun aktif olacağını belirler
@@ -82,6 +93,14 @@ class ScheduledRecipesScreen extends StatelessWidget {
 
   // Her bir planlanan yemek kartı
   Widget _buildScheduledCard(BuildContext context, recipe) {
+    final scheduleProvider = context.watch<ScheduleProvider>();
+    final scheduledRecipesIDs = scheduleProvider.scheduledRecipes;
+    var scheduledId = "";
+
+    for (final id in scheduledRecipesIDs) {
+      if (recipe.name == id.recipeId) scheduledId = id.id;
+    }
+
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
@@ -97,7 +116,7 @@ class ScheduledRecipesScreen extends StatelessWidget {
       ),
       onDismissed: (direction) {
         // Kaydırınca Provider'dan sil
-        context.read<ScheduleProvider>().removeFromSchedule(recipe);
+        context.read<ScheduleProvider>().removeFromSchedule(scheduledId);
       },
       child: Card(
         color: const Color(0xFF1E1E1E),
