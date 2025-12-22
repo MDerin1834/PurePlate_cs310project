@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pure_plate/models/recipe.dart';
 import 'package:pure_plate/services/favourites_service.dart';
 import 'auth_provider.dart';
 

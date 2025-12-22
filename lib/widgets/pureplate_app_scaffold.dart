@@ -14,9 +14,8 @@ class PurePlateAppScaffold extends StatelessWidget {
 
   // Sayfa değiştirme mantığı
   void _onItemTapped(BuildContext context, int index) {
-    if (index == pageIndex) return; // Zaten o sayfadaysak bir şey yapma
+    if (index == pageIndex) return;
 
-    // Sayfalar arası geçiş rotaları
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
@@ -25,7 +24,6 @@ class PurePlateAppScaffold extends StatelessWidget {
         Navigator.pushReplacementNamed(context, '/recipes');
         break;
       case 2:
-      // İŞTE ÇÖZÜM: 2. indexe (Profile) tıklandığında '/profile' rotasına git
         Navigator.pushReplacementNamed(context, '/profile');
         break;
     }
@@ -34,17 +32,13 @@ class PurePlateAppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 1. DEĞİŞİKLİK: AppBar'ı kaldırdık.
-      // Çünkü Home ve Profile ekranlarında kendi özel başlıklarımızı tasarladık.
-
-      extendBody: true, // 2. DEĞİŞİKLİK: Body'i alt barın arkasına uzatır (Cam efekti için)
+      extendBody: true,
 
       body: body,
 
       floatingActionButton: floatingActionButton,
 
       bottomNavigationBar: Container(
-        // 3. DEĞİŞİKLİK: Alt bar tasarımı (Karanlık & Cam Efekti)
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.85), // Yarı saydam siyah
           boxShadow: [

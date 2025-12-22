@@ -8,10 +8,8 @@ import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
-  // 1. EKLENEN KISIM: Veriyi tutacak değişken
   final Recipe recipe;
 
-  // 2. EKLENEN KISIM: Constructor (Kurucu) artık recipe istiyor
   const RecipeDetailsScreen({
     super.key,
     required this.recipe,
@@ -19,7 +17,6 @@ class RecipeDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ModalRoute satırı SİLİNDİ, artık yukarıdaki 'recipe' değişkenini kullanıyoruz.
 
     // Provider'ı dinle
     final favouritesProvider = context.watch<FavouritesProvider>();
@@ -259,7 +256,6 @@ class RecipeDetailsScreen extends StatelessWidget {
   }
 
   // --- YARDIMCI WIDGET'LAR ---
-  // (Bunlar aynı kalabilir ama kod bütünlüğü için tekrar ekledim)
 
   Widget _buildGlassButton({required IconData icon, required VoidCallback onPressed, Color color = Colors.white}) {
     return ClipRRect(

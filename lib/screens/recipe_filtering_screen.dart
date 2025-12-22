@@ -1,4 +1,4 @@
-import 'dart:ui'; // Blur için gerekli
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pure_plate/models/filter.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';

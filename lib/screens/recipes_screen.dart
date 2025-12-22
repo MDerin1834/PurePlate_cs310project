@@ -3,11 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/favourites_provider.dart';
 import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
-// import 'package:pure_plate/widgets/recipe_tile_widget.dart'; // Artık buna ihtiyacımız yok
 import 'package:pure_plate/models/recipe.dart';
-import 'package:pure_plate/screens/recipe_details_screen.dart'; // Detay sayfasına gitmek için
-import 'package:pure_plate/providers/scheduled_provider.dart';
-// --- 1. MODERN KART TASARIMI (Home'dan alındı) ---
+import 'package:pure_plate/screens/recipe_details_screen.dart';
+
 class ModernRecipeCard extends StatelessWidget {
   final Recipe recipe;
 
@@ -155,8 +153,6 @@ class ModernRecipeCard extends StatelessWidget {
   }
 }
 
-// --- 2. DİĞER WIDGETLAR ---
-
 class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
   final _controller = TextEditingController();
 
@@ -225,15 +221,14 @@ class RecipesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Liste yüksekliği modern karta uygun hale getirildi (220 -> 280)
     return SizedBox(
       height: 280,
       child: ListView.builder(
-        padding: const EdgeInsets.only(left: 24, right: 8, bottom: 20), // Padding düzenlendi
+        padding: const EdgeInsets.only(left: 24, right: 8, bottom: 20),
         scrollDirection: Axis.horizontal,
         itemCount: recipes.length,
         itemBuilder: (context, index) => Center(
-          child: ModernRecipeCard(recipe: recipes[index]), // Modern kart kullanıldı
+          child: ModernRecipeCard(recipe: recipes[index]),
         ),
       ),
     );

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/providers/user_profile_provider.dart';
-import 'package:pure_plate/models/user_profile.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});

@@ -5,10 +5,6 @@ import 'package:pure_plate/providers/auth_provider.dart';
 import 'package:pure_plate/providers/user_profile_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 
-// ... (ProfileInfoCard ve GoalsCard kodları aynı kalacak, onları tekrar yazmıyorum, aşağıda kullanıyoruz)
-// Eğer sildiysen önceki cevabımdan o classları da buraya eklemeyi unutma!
-// Yer kaplamaması için sadece ProfileScreen'i atıyorum.
-
 // 1. KİŞİSEL BİLGİ SATIRI
 class ProfileInfoCard extends StatelessWidget {
   final String title;

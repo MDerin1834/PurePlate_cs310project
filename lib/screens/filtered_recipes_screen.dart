@@ -10,9 +10,7 @@ class FilteredRecipesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Navigasyon argümanlarını alıyoruz (Mevcut mantık korunuyor)
     final Filter args = ModalRoute.of(context)!.settings.arguments as Filter;
-    // Filtreleme işlemi (Mevcut mantık korunuyor)
     final filtered = recipes.where(args.matches).toList();
 
     return PurePlateAppScaffold(
