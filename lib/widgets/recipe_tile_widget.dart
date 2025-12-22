@@ -59,7 +59,7 @@ class RecipeDescriptionWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(width: 10),
-            if (favourites.contains(recipe.name)) // TODO: use recipe.id instead od recipe.name
+            if (favourites.contains(recipe.name)) // TODO: use recipe.id instead of recipe.name
               Icon(
                 Icons.favorite,
                 color: Colors.red.shade400,

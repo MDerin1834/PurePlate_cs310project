@@ -104,7 +104,7 @@ class FavouriteRecipesListWidget extends StatelessWidget {
               ),
             )
           else
-            RecipesListWidget(recipes: recipes.where((r) => favourites.contains(r.name)).toList()), // TODO: use recipe.id instead od recipe.name
+            RecipesListWidget(recipes: recipes.where((r) => favourites.contains(r.name)).toList()), // TODO: use recipe.id instead of recipe.name
         ],
       ),
     );

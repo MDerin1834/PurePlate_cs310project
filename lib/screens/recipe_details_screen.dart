@@ -64,7 +64,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: IconButton(
                       icon: Icon(
-                        favourites.contains(recipe.name) ? Icons.favorite : Icons.favorite_border, // TODO: use recipe.id instead od recipe.name
+                        favourites.contains(recipe.name) ? Icons.favorite : Icons.favorite_border, // TODO: use recipe.id instead of recipe.name
                         color: favourites.contains(recipe.name) ? Colors.red : Colors.grey,
                       ),
                       onPressed: () async {
