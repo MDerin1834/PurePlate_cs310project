@@ -46,6 +46,7 @@ class FilteredRecipesScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // HEADER: Geri Butonu ve Başlık
                   Row(
@@ -93,7 +94,8 @@ class FilteredRecipesScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // İÇERİK: Liste veya Boş Durum
-                  Expanded(
+                  Flexible(
+                    fit: FlexFit.loose,
                     child: filtered.isEmpty
                         ? _buildEmptyState(context) // Boşsa özel tasarım
                         : ListView.builder(
