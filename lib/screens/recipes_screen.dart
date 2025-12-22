@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pure_plate/data/recipes.dart';
+import 'package:provider/provider.dart';
+import 'package:pure_plate/providers/recipe_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/widgets/recipe_tile_widget.dart';
 import 'package:pure_plate/models/recipe.dart';
@@ -73,11 +74,13 @@ class RecipesListWidget extends StatelessWidget {
 }
 
 class FavouriteRecipesListWidget extends StatelessWidget {
-  final _favourites = recipes.where((r) => r.isFavourite).toList();
-  FavouriteRecipesListWidget({super.key});
+  const FavouriteRecipesListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final recipeProvider = context.watch<RecipeProvider>();
+    final favourites = recipeProvider.favouriteRecipes;
+
     return SizedBox(
       height: 300,
       child: Column(
@@ -88,19 +91,38 @@ class FavouriteRecipesListWidget extends StatelessWidget {
             'Your Favorites',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
-          RecipesListWidget(recipes: _favourites),
+          if (favourites.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'No favorite recipes yet',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            )
+          else
+            RecipesListWidget(recipes: favourites),
         ],
       ),
     );
   }
 }
 
-class SuggestedRecipesListWidget extends StatelessWidget {
-  final _favourites = recipes.where((r) => r.isFavourite).toList();
-  SuggestedRecipesListWidget({super.key});
+class AllRecipesListWidget extends StatelessWidget {
+  const AllRecipesListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final recipeProvider = context.watch<RecipeProvider>();
+    final allRecipes = recipeProvider.recipes;
+
+    if (recipeProvider.isLoading) {
+      return SizedBox(
+        height: 300,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return SizedBox(
       height: 300,
       child: Column(
@@ -108,11 +130,21 @@ class SuggestedRecipesListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'We\'ve been inspired by the recipes you liked',
+            'All Recipes',
             style: Theme.of(context).textTheme.headlineLarge,
             textAlign: TextAlign.center,
           ),
-          RecipesListWidget(recipes: _favourites),
+          if (allRecipes.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'No recipes available',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            )
+          else
+            RecipesListWidget(recipes: allRecipes),
         ],
       ),
     );
@@ -137,7 +169,7 @@ class RecipesScreen extends StatelessWidget {
               endIndent: 0,
               color: Colors.grey,
             ),
-            SuggestedRecipesListWidget(),
+            AllRecipesListWidget(),
           ],
         ),
       ),
