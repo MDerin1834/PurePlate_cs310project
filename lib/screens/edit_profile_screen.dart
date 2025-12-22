@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
-import 'package:pure_plate/data/user_data.dart';
+import 'package:pure_plate/providers/user_profile_provider.dart';
+import 'package:pure_plate/models/user_profile.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -14,7 +16,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _ageController;
   late TextEditingController _dietTypeController;
   late TextEditingController _calorieTargetController;
-  late TextEditingController _passwordController;
   late TextEditingController _proteinTargetController;
 
   late bool _isGlutenFree;
@@ -22,68 +23,86 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late bool _isLactoseFree;
   late bool _isLowCarb;
 
+  bool _isInitialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    final user = currentUser;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    _nameController = TextEditingController(text: user.name);
-    _ageController = TextEditingController(text: user.age.toString());
-    _dietTypeController = TextEditingController(text: user.dietType);
-    _calorieTargetController =
-        TextEditingController(text: user.calorieTarget.toString());
-    _passwordController = TextEditingController();
-    _proteinTargetController =
-        TextEditingController(text: user.proteinTarget.toString());
+    if (!_isInitialized) {
+      final userProfileProvider = context.watch<UserProfileProvider>();
+      final profile = userProfileProvider.userProfile;
 
-    _isGlutenFree = user.isGlutenFree;
-    _isVegetarian = user.isVegetarian;
-    _isLactoseFree = user.isLactoseFree;
-    _isLowCarb = user.isLowCarb;
+      if (profile != null) {
+        _nameController = TextEditingController(text: profile.name);
+        _ageController = TextEditingController(text: profile.age.toString());
+        _dietTypeController = TextEditingController(text: profile.dietType);
+        _calorieTargetController =
+            TextEditingController(text: profile.calorieTarget.toString());
+        _proteinTargetController =
+            TextEditingController(text: profile.proteinTarget.toString());
+
+        _isGlutenFree = profile.isGlutenFree;
+        _isVegetarian = profile.isVegetarian;
+        _isLactoseFree = profile.isLactoseFree;
+        _isLowCarb = profile.isLowCarb;
+
+        _isInitialized = true;
+      }
+    }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    _dietTypeController.dispose();
-    _calorieTargetController.dispose();
-    _passwordController.dispose();
-    _proteinTargetController.dispose();
+    if (_isInitialized) {
+      _nameController.dispose();
+      _ageController.dispose();
+      _dietTypeController.dispose();
+      _calorieTargetController.dispose();
+      _proteinTargetController.dispose();
+    }
     super.dispose();
   }
 
-  void _saveChanges() {
-    currentUser = currentUser.copyWith(
-      name: _nameController.text,
-      age: int.tryParse(_ageController.text) ?? currentUser.age,
-      dietType: _dietTypeController.text,
-      calorieTarget:
-      int.tryParse(_calorieTargetController.text) ?? currentUser.calorieTarget,
-      proteinTarget:
-      int.tryParse(_proteinTargetController.text) ?? currentUser.proteinTarget,
+  Future<void> _saveChanges() async {
+    final userProfileProvider = context.read<UserProfileProvider>();
+    final currentProfile = userProfileProvider.userProfile;
+
+    if (currentProfile == null) return;
+
+    final updatedProfile = currentProfile.copyWith(
+      name: _nameController.text.trim(),
+      age: int.tryParse(_ageController.text) ?? currentProfile.age,
+      dietType: _dietTypeController.text.trim(),
+      calorieTarget: int.tryParse(_calorieTargetController.text) ??
+          currentProfile.calorieTarget,
+      proteinTarget: int.tryParse(_proteinTargetController.text) ??
+          currentProfile.proteinTarget,
       isGlutenFree: _isGlutenFree,
       isVegetarian: _isVegetarian,
       isLactoseFree: _isLactoseFree,
       isLowCarb: _isLowCarb,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Profile updated successfully!'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+    await userProfileProvider.updateProfile(updatedProfile);
 
-    Navigator.pop(context);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Profile updated successfully!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.pop(context);
+    }
   }
 
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
   }) {
     final theme = Theme.of(context);
 
@@ -101,7 +120,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          obscureText: obscureText,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -159,6 +177,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final userProfileProvider = context.watch<UserProfileProvider>();
+
+    if (userProfileProvider.isLoading || !_isInitialized) {
+      return PurePlateAppScaffold(
+        pageIndex: 2,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return PurePlateAppScaffold(
       pageIndex: 2,
@@ -194,20 +220,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 CircleAvatar(
                   radius: 60,
                   backgroundColor: theme.colorScheme.primary,
-                  child: ClipOval(
-                    child: Image.asset(
-                      'lib/assets/images/default_profile.png',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.account_circle,
-                          size: 120,
-                          color: Colors.white,
-                        );
-                      },
-                    ),
+                  child: Icon(
+                    Icons.account_circle,
+                    size: 120,
+                    color: Colors.white,
                   ),
                 ),
                 Positioned(
@@ -220,7 +236,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       icon: Icon(Icons.camera_alt, size: 20, color: Colors.white),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Image picker not implemented yet')),
+                          SnackBar(
+                              content: Text('Image picker not implemented yet')),
                         );
                       },
                     ),
@@ -255,16 +272,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: _calorieTargetController,
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 15),
-
-            _buildTextField(
-              label: 'Password',
-              controller: _passwordController,
-              obscureText: true,
-            ),
             SizedBox(height: 25),
 
-            // Fixed Preferences Block
+            // Dietary Preferences Block
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(16),
@@ -331,7 +341,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             SizedBox(height: 25),
 
-            // Editable Goals
+            // Protein Target
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(16),
@@ -354,19 +364,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        'Goals',
+                        'Daily Goals',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.green.shade900,
                         ),
                       ),
                     ],
-                  ),
-                  SizedBox(height: 15),
-                  _buildTextField(
-                    label: 'Daily Calorie Target (kcal)',
-                    controller: _calorieTargetController,
-                    keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 15),
                   _buildTextField(
