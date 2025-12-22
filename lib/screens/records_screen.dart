@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
+import 'package:pure_plate/providers/user_profile_provider.dart';
 import 'package:pure_plate/models/meal_log.dart';
 import 'package:intl/intl.dart';
 
@@ -222,7 +223,6 @@ class RecordsScreen extends StatelessWidget {
                 return;
               }
 
-              // Update meal in Firestore
               await context.read<MealLogProvider>().updateMeal(
                 meal.id,
                 name,
@@ -292,6 +292,11 @@ class RecordsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final mealProvider = context.watch<MealLogProvider>();
 
+    // ← ADD THIS: Watch UserProfileProvider for targets
+    final userProfile = context.watch<UserProfileProvider>().userProfile;
+    final calorieTarget = userProfile?.calorieTarget ?? 2000;
+    final proteinTarget = userProfile?.proteinTarget ?? 50;
+
     // Get today's meals
     final today = DateTime.now();
     final todayMeals = mealProvider.mealLogs.where((meal) {
@@ -301,6 +306,10 @@ class RecordsScreen extends StatelessWidget {
     }).toList();
 
     final totalCalories = mealProvider.todayCalories;
+
+    // Calculate protein (placeholder - you'd need to track this properly)
+    // For now, estimate 1g protein per 20 calories
+    final estimatedProtein = (totalCalories / 20).round();
 
     return PurePlateAppScaffold(
       pageIndex: 0,
@@ -345,7 +354,7 @@ class RecordsScreen extends StatelessWidget {
             ),
             SizedBox(height: 15),
 
-            // Today's Meals - From Firestore
+            // Today's Meals
             if (todayMeals.isEmpty)
               Center(
                 child: Padding(
@@ -398,14 +407,14 @@ class RecordsScreen extends StatelessWidget {
             NutrientProgressCard(
               label: 'Calories',
               current: totalCalories,
-              target: 2000,
+              target: calorieTarget,  // ← CHANGED: Use dynamic value
               color: Colors.orange,
             ),
             SizedBox(height: 10),
             NutrientProgressCard(
               label: 'Protein',
-              current: 65,
-              target: 80,
+              current: estimatedProtein,  // ← CHANGED: Use estimated value
+              target: proteinTarget,  // ← CHANGED: Use dynamic value
               color: Colors.blue,
             ),
 

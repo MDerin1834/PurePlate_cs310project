@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
 import 'package:pure_plate/providers/meal_log_provider.dart';
+import 'package:pure_plate/providers/user_profile_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/widgets/recipe_tile_widget.dart';
 import 'package:pure_plate/data/recipes.dart';
@@ -113,14 +114,18 @@ class LogMealViewWidget extends StatelessWidget {
     final mealProvider = context.watch<MealLogProvider>();
     final todayCalories = mealProvider.todayCalories;
 
+    // ← ADD THIS: Watch UserProfileProvider for calorie target
+    final userProfile = context.watch<UserProfileProvider>().userProfile;
+    final calorieTarget = userProfile?.calorieTarget ?? 2000;
+
     return Center(
       child: Column(
         spacing: 30,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CalorieBudgetTrackerWidget(
-            calorieBudget: 2000,
-            currentCalories: todayCalories,  // Real-time from Firestore!
+            calorieBudget: calorieTarget,  // ← CHANGED: Use dynamic value
+            currentCalories: todayCalories,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -140,7 +145,6 @@ class LogMealViewWidget extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 onPressed: () async {
-                  // Show dialog to log a meal
                   await _showLogMealDialog(context);
                 },
               ),
@@ -223,16 +227,19 @@ class LogMealViewWidget extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '${recipe.calories} kcal • ${recipe.cookingTime} min',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              '${recipe.calories} kcal • ${recipe.cookingTime}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
                             ),
                           ],
                         ),
                       );
                     }).toList(),
-                    onChanged: (Recipe? value) {
+                    onChanged: (Recipe? newValue) {
                       setState(() {
-                        selectedRecipe = value;
+                        selectedRecipe = newValue;
                       });
                     },
                   ),
@@ -243,39 +250,20 @@ class LogMealViewWidget extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.orange, width: 2),
+                    border: Border.all(color: Colors.green),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Calories:'),
-                          Text(
-                            '${selectedRecipe!.calories} kcal',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange.shade900,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Selected: ${selectedRecipe!.name}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Cooking Time:'),
-                          Text(
-                            '${selectedRecipe!.cookingTime} min',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue.shade900,
-                            ),
-                          ),
-                        ],
-                      ),
+                      Text('Calories: ${selectedRecipe!.calories} kcal'),
+                      Text('Time: ${selectedRecipe!.cookingTime}'),
                     ],
                   ),
                 ),
@@ -326,7 +314,6 @@ class HomeScreen extends StatelessWidget {
     try {
       final authProvider = context.read<AuthProvider>();
 
-      // 1. Logout
       await authProvider.logout();
 
       if (context.mounted) {
@@ -338,7 +325,6 @@ class HomeScreen extends StatelessWidget {
           ),
         );
 
-        // 2. Navigate to AuthGate
         Navigator.of(context).pushNamedAndRemoveUntil(
           '/',
               (route) => false,
