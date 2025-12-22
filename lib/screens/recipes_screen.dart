@@ -173,7 +173,7 @@ class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
               ),
               child: TextField(
                 controller: _controller,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: 'Search recipes...',
                   hintStyle: const TextStyle(color: Colors.white54),
@@ -181,7 +181,7 @@ class _RecipeSearchBarWidgetState extends State<RecipeSearchBarWidget> {
                   prefixIcon: const Icon(Icons.search, color: Colors.tealAccent),
                   suffixIcon: IconButton(
                     onPressed: () => _controller.clear(),
-                    icon: const Icon(Icons.clear, color: Colors.white54),
+                    icon: const Icon(Icons.clear, color: Colors.black),
                   ),
                   contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),

@@ -286,15 +286,15 @@ class _RecipeFilteringScreenState extends State<RecipeFilteringScreen> {
                           ),
                           child: TextField(
                             controller: _controller,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               hintText: 'Search ingredients...',
                               hintStyle: TextStyle(color: Colors.white30),
                               border: InputBorder.none,
-                              prefixIcon: Icon(Icons.search, color: Colors.white70),
+                              prefixIcon: Icon(Icons.search, color: Colors.tealAccent),
                               suffixIcon: IconButton(
                                 onPressed: () => _controller.clear(),
-                                icon: Icon(Icons.clear, color: Colors.white70),
+                                icon: Icon(Icons.clear, color: Colors.black),
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                             ),
