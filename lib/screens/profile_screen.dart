@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/providers/user_profile_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
-import 'package:pure_plate/data/user_data.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final String title;
@@ -115,8 +115,16 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = currentUser;
     final theme = Theme.of(context);
+    final userProfileProvider = context.watch<UserProfileProvider>();
+    final userProfile = userProfileProvider.userProfile;
+
+    if (userProfileProvider.isLoading || userProfile == null) {
+      return PurePlateAppScaffold(
+        pageIndex: 2,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return PurePlateAppScaffold(
       pageIndex: 2,
@@ -138,20 +146,10 @@ class ProfileScreen extends StatelessWidget {
             CircleAvatar(
               radius: 60,
               backgroundColor: theme.colorScheme.primary,
-              child: ClipOval(
-                child: Image.asset(
-                  'lib/assets/images/default_profile.png',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      Icons.account_circle,
-                      size: 120,
-                      color: Colors.white,
-                    );
-                  },
-                ),
+              child: Icon(
+                Icons.account_circle,
+                size: 120,
+                color: Colors.white,
               ),
             ),
             SizedBox(height: 30),
@@ -179,15 +177,15 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 15),
-                  ProfileInfoCard(title: 'Name', value: user.name),
+                  ProfileInfoCard(title: 'Name', value: userProfile.name),
                   SizedBox(height: 8),
-                  ProfileInfoCard(title: 'Age', value: '${user.age} years'),
+                  ProfileInfoCard(title: 'Age', value: '${userProfile.age} years'),
                   SizedBox(height: 8),
-                  ProfileInfoCard(title: 'Diet Type', value: user.dietType),
+                  ProfileInfoCard(title: 'Diet Type', value: userProfile.dietType),
                   SizedBox(height: 8),
                   ProfileInfoCard(
                     title: 'Calorie Target',
-                    value: '${user.calorieTarget} kcal',
+                    value: '${userProfile.calorieTarget} kcal',
                   ),
                 ],
               ),
@@ -210,7 +208,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    user.email,
+                    userProfile.email,
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
@@ -222,8 +220,8 @@ class ProfileScreen extends StatelessWidget {
             GoalsCard(
               title: 'Goals',
               goals: [
-                'Daily calorie intake: ${user.calorieTarget} kcal',
-                'Daily protein intake: ${user.proteinTarget}g',
+                'Daily calorie intake: ${userProfile.calorieTarget} kcal',
+                'Daily protein intake: ${userProfile.proteinTarget}g',
               ],
             ),
             SizedBox(height: 30),
@@ -245,22 +243,22 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 15),
 
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () async {
-                    await context.read<AuthProvider>().logout();
-                    Navigator.popAndPushNamed(context, '/login');
+                  await context.read<AuthProvider>().logout();
+                  Navigator.popAndPushNamed(context, '/login');
                 },
                 icon: Icon(Icons.logout),
                 label: Text(
                   'Log Out',
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.red
+                    color: Colors.red,
                   ),
                 ),
               ),
