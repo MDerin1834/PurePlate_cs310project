@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pure_plate/models/recipe.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
+import 'package:provider/provider.dart';
+import 'package:pure_plate/providers/meal_log_provider.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
   const RecipeDetailsScreen({super.key});
@@ -200,14 +202,25 @@ class RecipeDetailsScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added to log!'),
-                                backgroundColor: Colors.green,
-                                duration: Duration(seconds: 2),
-                              ),
+                          onPressed: () async {
+                            // Log this recipe as a meal
+                            await context.read<MealLogProvider>().logMeal(
+                              recipe.name,
+                              recipe.calories,
                             );
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('✅ ${recipe.name} added to your log!'),
+                                  backgroundColor: Colors.green,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+
+                              // Optionally navigate to records screen
+                              Navigator.pushNamed(context, '/records');
+                            }
                           },
                           icon: Icon(Icons.add_circle),
                           label: Text('Add to Log'),
