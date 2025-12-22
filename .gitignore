@@ -44,5 +44,3 @@ symlinks/
 # Flutter build outputs
 .flutter-plugins
 .flutter-plugins-dependencies
-/lib/screens/screens/scheduled_recipes_screen.dart
-/lib/providers/scheduled_provider.dart
