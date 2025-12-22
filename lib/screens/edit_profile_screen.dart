@@ -125,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
