@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
+import 'package:pure_plate/providers/meal_log_provider.dart';
 import 'package:pure_plate/widgets/pureplate_app_scaffold.dart';
 import 'package:pure_plate/widgets/recipe_tile_widget.dart';
 import 'package:pure_plate/data/recipes.dart';
+import 'package:pure_plate/models/recipe.dart';
+import 'package:pure_plate/services/recipe_service.dart';
+import 'package:pure_plate/providers/recipe_provider.dart';
 
 class CalorieBudgetTrackerWidget extends StatelessWidget {
   final int calorieBudget;
@@ -105,14 +109,18 @@ class LogMealViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Watch MealLogProvider for real-time calorie updates
+    final mealProvider = context.watch<MealLogProvider>();
+    final todayCalories = mealProvider.todayCalories;
+
     return Center(
       child: Column(
         spacing: 30,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CalorieBudgetTrackerWidget(
-            calorieBudget: 3200,
-            currentCalories: 1400,
+          CalorieBudgetTrackerWidget(
+            calorieBudget: 2000,
+            currentCalories: todayCalories,  // Real-time from Firestore!
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -131,8 +139,9 @@ class LogMealViewWidget extends StatelessWidget {
                   'Log Meal',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/recipes');
+                onPressed: () async {
+                  // Show dialog to log a meal
+                  await _showLogMealDialog(context);
                 },
               ),
               SizedBox(width: 15),
@@ -160,6 +169,154 @@ class LogMealViewWidget extends StatelessWidget {
       ),
     );
   }
+
+  // Helper function to show recipe selection dialog
+  Future<void> _showLogMealDialog(BuildContext context) async {
+    final recipeProvider = context.read<RecipeProvider>();
+    final recipes = recipeProvider.recipes;
+
+    if (recipes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No recipes available. Please seed recipes first.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    Recipe? selectedRecipe;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text('Log a Meal'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Select a recipe:',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 16),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Recipe>(
+                    isExpanded: true,
+                    hint: Text('Choose a recipe'),
+                    value: selectedRecipe,
+                    items: recipes.map((recipe) {
+                      return DropdownMenuItem<Recipe>(
+                        value: recipe,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              recipe.name,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '${recipe.calories} kcal • ${recipe.cookingTime} min',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (Recipe? value) {
+                      setState(() {
+                        selectedRecipe = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              if (selectedRecipe != null) ...[
+                SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange, width: 2),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Calories:'),
+                          Text(
+                            '${selectedRecipe!.calories} kcal',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange.shade900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Cooking Time:'),
+                          Text(
+                            '${selectedRecipe!.cookingTime} min',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: selectedRecipe == null
+                  ? null
+                  : () async {
+                // Log meal to Firestore
+                await context.read<MealLogProvider>().logMeal(
+                  selectedRecipe!.name,
+                  selectedRecipe!.calories,
+                );
+
+                Navigator.pop(dialogContext);
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          '✅ ${selectedRecipe!.name} logged! Check Records screen'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
+              child: Text('Log Meal'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class HomeScreen extends StatelessWidget {
@@ -168,8 +325,8 @@ class HomeScreen extends StatelessWidget {
   Future<void> _handleLogout(BuildContext context) async {
     try {
       final authProvider = context.read<AuthProvider>();
-      
-      // 1. Çıkış yap
+
+      // 1. Logout
       await authProvider.logout();
 
       if (context.mounted) {
@@ -181,11 +338,10 @@ class HomeScreen extends StatelessWidget {
           ),
         );
 
-        // 2. AuthGate ('/') rotasına yönlendir
-        // Bu sayede AuthGate kullanıcının çıktığını görüp Login ekranını açacaktır.
+        // 2. Navigate to AuthGate
         Navigator.of(context).pushNamedAndRemoveUntil(
-          '/', 
-          (route) => false,
+          '/',
+              (route) => false,
         );
       }
     } catch (e) {
@@ -229,7 +385,8 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -242,16 +399,45 @@ class HomeScreen extends StatelessWidget {
                           letterSpacing: 1.0,
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.logout_rounded, color: Colors.tealAccent),
-                          tooltip: 'Logout',
-                          onPressed: () => _handleLogout(context),
-                        ),
+                      Row(
+                        children: [
+                          // 🔥 TEMPORARY SEED BUTTON - Remove after seeding!
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.upload_file, color: Colors.orange),
+                              tooltip: 'Seed Recipes',
+                              onPressed: () async {
+                                final recipeService = RecipeService();
+                                await recipeService.seedRecipes();
+
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('✅ Recipes seeded! Check Firestore'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.logout_rounded, color: Colors.tealAccent),
+                              tooltip: 'Logout',
+                              onPressed: () => _handleLogout(context),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -278,7 +464,8 @@ class HomeScreen extends StatelessWidget {
                           padding: EdgeInsets.only(left: 24, bottom: 16),
                           child: Row(
                             children: [
-                              Icon(Icons.restaurant_menu, color: Colors.tealAccent, size: 20),
+                              Icon(Icons.restaurant_menu,
+                                  color: Colors.tealAccent, size: 20),
                               SizedBox(width: 8),
                               Text(
                                 'Scheduled Recipes',
@@ -295,7 +482,8 @@ class HomeScreen extends StatelessWidget {
                         SizedBox(
                           height: 350,
                           child: ListView.builder(
-                            padding: EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                            padding:
+                            EdgeInsets.only(left: 16, right: 16, bottom: 20),
                             scrollDirection: Axis.horizontal,
                             itemCount: recipes.length,
                             itemBuilder: (context, index) => Center(
