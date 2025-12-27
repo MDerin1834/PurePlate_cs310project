@@ -145,6 +145,217 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
+## Contribution Breakdown by Team Member
+
+This section summarizes each contributor’s responsibilities and major contributions based on the Git commit history.
+
+---
+
+## Mustafa Derin
+
+### Architecture & State Management
+- Implemented `MealLogProvider` with dependency injection  
+- Designed and integrated `RecipeProvider` and `UserProvider`  
+- Refactored providers for cleaner separation of concerns  
+- This work significantly improved modularity and made state management easier to test and maintain.
+
+### Data Models & Backend Integration
+- Created core data models such as `MealLog` and `UserProfile`  
+- Implemented service-layer abstractions for meals, recipes, and users  
+- Removed deprecated user data structures and cleaned legacy code  
+- These changes ensured a clear contract between UI, providers, and Firebase services.
+
+### Testing Infrastructure
+- Added `mocktail` dependency  
+- Implemented unit tests for `MealLogProvider`  
+- Improved testability by decoupling providers from Firebase  
+- This laid the foundation for reliable automated testing without external dependencies.
+
+### Project Documentation
+- Wrote and revised `README.md` multiple times  
+- Added testing overview and developer contribution list  
+- Improved clarity and structure of documentation  
+- The documentation now clearly communicates setup, usage, and testing expectations.
+
+### Project Initialization & Maintenance
+- Initial project setup and repository structure  
+- Managed uploads of initial assets and source files  
+- Maintained project consistency across refactors  
+- These efforts ensured long-term maintainability and onboarding ease for new contributors.
+
+---
+
+## Berkay Şahin
+
+### Authentication & Firebase Integration
+- Implemented login, logout, and signup functionality  
+- Fixed and improved `AuthProvider`  
+- Performed Firebase setup and configuration  
+- This ensured a stable and secure authentication flow throughout the application.
+
+### Navigation & Routing
+- Fixed routing issues across multiple screens  
+- Prevented onboarding screen from reappearing after login  
+- Managed navigation stack issues in filtering flows  
+- These changes improved user experience by eliminating unexpected navigation behavior.
+
+### UI & UX Improvements
+- Enhanced home screen layout and responsiveness  
+- Improved compatibility with global theme  
+- Made screens landscape-orientation friendly  
+- The application became more visually consistent and usable across devices.
+
+### Recipe & Feature Enhancements
+- Implemented `FilteredRecipesScreen`  
+- Added favorite recipe functionality  
+- Added time indicators for scheduled recipes  
+- These features increased usability and personalization for end users.
+
+### Bug Fixes & Code Cleanup
+- Fixed UI rendering bugs  
+- Corrected typos and minor logic errors  
+- Performed general refactoring and cleanup  
+- Continuous cleanup reduced technical debt and improved code stability.
+
+---
+
+## Simay Otlaca
+
+### Authentication Screens
+- Updated `login_screen.dart` multiple times  
+- Improved login UI and validation logic  
+- Enhanced error handling and user feedback  
+- These improvements made authentication clearer and more user-friendly.
+
+### Home & Records Screens
+- Updated `home_screen.dart`  
+- Updated `records_screen.dart`  
+- Improved layout and screen consistency  
+- The screens now follow a more uniform design and interaction pattern.
+
+### Recipe Screens
+- Refactored `recipe_filtering_screen.dart`  
+- Updated `recipes_screen.dart` and `recipe_details_screen.dart`  
+- Improved styling and readability with comments  
+- This made recipe-related screens easier to understand and extend.
+
+### Error Handling
+- Improved error handling in `AuthProvider`  
+- Addressed runtime issues during authentication flow  
+- Reduced crashes and unexpected behavior during user login  
+- These changes increased overall app reliability.
+
+### Code Quality Improvements
+- Fixed TODO typos  
+- Improved code readability and maintainability  
+- Verified commits to ensure repository integrity  
+- This contributed to a cleaner and more professional codebase.
+
+---
+
+## Ahmet Mert Kara
+
+### User Profile & Registration
+- Updated `register_screen.dart`  
+- Updated `profile_screen.dart` and `edit_profile_screen.dart`  
+- Added user profile provider and model  
+- This enabled more complete and editable user profile management.
+
+### Meal Logging & Nutrition Logic
+- Created `MealLog` model  
+- Updated `meal_log_provider.dart`  
+- Added dynamic protein goals  
+- These changes improved nutritional tracking accuracy and flexibility.
+
+### Scheduled Recipes
+- Implemented functionality to upload scheduled recipes to Firestore  
+- Fixed issues related to dynamic data updates  
+- Ensured scheduled data stayed synchronized with the backend  
+- This feature enhanced planning and automation for users.
+
+### Project Configuration
+- Updated `pubspec.yaml`  
+- Added `devtools_options.yaml`  
+- Fixed `.gitignore`  
+- Proper configuration ensured smoother development and debugging workflows.
+
+### General Maintenance
+- Performed code cleanup  
+- Reverted problematic changes when necessary  
+- Assisted in merging branches  
+- These actions helped maintain repository stability during rapid development.
+
+---
+
+## Ceren Şenol
+
+### Firebase Setup
+- Set up Firebase configuration files  
+- Added `firebase_options.dart`  
+- Assisted in initial Firebase integration  
+- This work was essential for enabling backend connectivity early in development.
+
+### Recipe Data & Models
+- Updated `recipe.dart`  
+- Updated `recipe_provider.dart`  
+- Improved recipe-related data handling  
+- These updates ensured recipes were consistently modeled and managed.
+
+### UI Screen Updates
+- Updated `recipes_screen.dart`  
+- Updated `recipe_details_screen.dart`  
+- Improved screen layout and behavior  
+- The changes enhanced usability and visual clarity for recipe browsing.
+
+### Theme & Visual Updates
+- Updated `theme.dart`  
+- Ensured UI consistency with global theme  
+- Helped unify the visual identity of the application  
+- This resulted in a more polished and cohesive look.
+
+### Early Project Development
+- Added initial user and recipe data  
+- Created early versions of screens and models  
+- Assisted with repository merges  
+- These contributions played a key role in establishing the project’s initial foundation.
+
+
+## Setup & Run Instructions
+
+### Prerequisites
+
+Flutter SDK >= 3.9.2
+Dart SDK (bundled with Flutter)
+Android Studio or VS Code
+
+Firebase project with:
+Firebase Authentication enabled
+Cloud Firestore enabled
+
+### Firebase Configuration
+
+Create a Firebase project
+Add Android and/or iOS apps
+
+Download and place:
+google-services.json (Android)
+GoogleService-Info.plist (iOS)
+
+Enable:
+Email/Password Authentication
+Firestore Database
+
+### Install Dependencies
+flutter pub get
+
+### Run the Application
+flutter run
+
+## Testing
+
+### Running All Tests
+flutter test
+
 ## Testing Overview
 
 This project includes both unit tests and a widget test to verify core application behavior.
