@@ -145,6 +145,38 @@ Combined with its **Calorie Visualization Ring**, it uniquely helps users stay m
 
 ---
 
+## Testing Overview
+
+This project includes both unit tests and a widget test to verify core application behavior.
+
+### Unit Tests – MealLogProvider
+
+The unit tests focus on the business logic and state management of MealLogProvider by mocking external dependencies (AuthProvider and MealService).
+They cover:
+1. Initial state validation: 
+Ensures the provider starts with an empty meal list and is not loading when no user is logged in.
+2. Meal loading behavior
+Verifies that meals are correctly loaded from a stream when a user exists and that the loading state updates properly.
+3. Daily nutrition calculations
+Confirms that todayCalories and todayProtein only count meals logged on the current day.
+
+Service interaction methods
+Ensures that:
+1. logMeal calls MealService.addMeal
+2. updateMeal calls MealService.updateMeal
+3. deleteMeal calls MealService.deleteMeal with the correct user ID and parameters.
+
+All external services are mocked to keep the tests isolated and deterministic.
+
+### Widget Test – Smoke Test
+
+The widget test verifies that the main application UI builds correctly and basic user interaction works.
+It covers:
+1. Successful rendering of the app (MyApp)
+2. Correct initial UI state
+3. UI update after a button tap (counter increment)
+4. This serves as a basic smoke test to ensure the app launches and responds to user interaction.
+
 ## Future Work
 
 - Implement real-time notifications for planned meals.  
