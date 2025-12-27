@@ -1,50 +1,61 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:pure_plate/models/meal_log.dart';
 import 'package:pure_plate/providers/auth_provider.dart';
 import 'package:pure_plate/services/meal_service.dart';
-import 'package:pure_plate/models/meal_log.dart';
-import 'dart:async';
 
 class MealLogProvider extends ChangeNotifier {
   final AuthProvider _authProvider;
-  final MealService _mealService = MealService();
+  final MealService _mealService;
 
   List<MealLog> _mealLogs = [];
   bool _isLoading = false;
-  StreamSubscription? _mealsSubscription;
+  StreamSubscription<List<MealLog>>? _mealsSubscription;
 
-  MealLogProvider(this._authProvider) {
+  /// Constructor with dependency injection (REQUIRED for unit testing)
+  MealLogProvider(
+    this._authProvider,
+    this._mealService,
+  ) {
     _init();
   }
 
-  List<MealLog> get mealLogs => _mealLogs;
+  /// Expose immutable state
+  List<MealLog> get mealLogs => List.unmodifiable(_mealLogs);
   bool get isLoading => _isLoading;
 
+  /// ---- Derived state ----
+
   int get todayCalories {
-    final today = DateTime.now();
+    final today = _now;
     return _mealLogs
         .where((meal) =>
-    meal.createdAt.year == today.year &&
-        meal.createdAt.month == today.month &&
-        meal.createdAt.day == today.day)
+            meal.createdAt.year == today.year &&
+            meal.createdAt.month == today.month &&
+            meal.createdAt.day == today.day)
         .fold(0, (sum, meal) => sum + meal.calories);
   }
 
-  // ← ADD THIS: Calculate today's protein
   int get todayProtein {
-    final today = DateTime.now();
+    final today = _now;
     return _mealLogs
         .where((meal) =>
-    meal.createdAt.year == today.year &&
-        meal.createdAt.month == today.month &&
-        meal.createdAt.day == today.day)
+            meal.createdAt.year == today.year &&
+            meal.createdAt.month == today.month &&
+            meal.createdAt.day == today.day)
         .fold(0, (sum, meal) => sum + meal.protein);
   }
+
+  /// ---- Initialization ----
 
   void _init() {
     if (_authProvider.user != null) {
       _loadMeals();
     }
   }
+
+  /// ---- Data loading ----
 
   void _loadMeals() {
     final userId = _authProvider.user?.uid;
@@ -61,18 +72,40 @@ class MealLogProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> logMeal(String recipeName, int calories, int protein) async {
+  /// ---- Actions ----
+
+  Future<void> logMeal(
+    String recipeName,
+    int calories,
+    int protein,
+  ) async {
     final userId = _authProvider.user?.uid;
     if (userId == null) return;
 
-    await _mealService.addMeal(userId, recipeName, calories, protein);
+    await _mealService.addMeal(
+      userId,
+      recipeName,
+      calories,
+      protein,
+    );
   }
 
-  Future<void> updateMeal(String mealId, String recipeName, int calories, int protein) async {
+  Future<void> updateMeal(
+    String mealId,
+    String recipeName,
+    int calories,
+    int protein,
+  ) async {
     final userId = _authProvider.user?.uid;
     if (userId == null) return;
 
-    await _mealService.updateMeal(userId, mealId, recipeName, calories, protein);
+    await _mealService.updateMeal(
+      userId,
+      mealId,
+      recipeName,
+      calories,
+      protein,
+    );
   }
 
   Future<void> deleteMeal(String mealId) async {
@@ -81,6 +114,12 @@ class MealLogProvider extends ChangeNotifier {
 
     await _mealService.deleteMeal(userId, mealId);
   }
+
+  /// ---- Time abstraction (test-friendly) ----
+
+  DateTime get _now => DateTime.now();
+
+  /// ---- Cleanup ----
 
   @override
   void dispose() {
