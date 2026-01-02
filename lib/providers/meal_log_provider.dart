@@ -15,9 +15,9 @@ class MealLogProvider extends ChangeNotifier {
 
   /// Constructor with dependency injection (REQUIRED for unit testing)
   MealLogProvider(
-    this._authProvider,
-    this._mealService,
-  ) {
+      this._authProvider,
+      {MealService? mealService}
+      ) : _mealService = mealService ?? MealService() {
     _init();
   }
 
