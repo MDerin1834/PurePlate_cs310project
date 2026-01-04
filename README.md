@@ -363,9 +363,9 @@ Purpose
 The unit tests focus on validating the numerical logic used in daily nutrition tracking. These tests ensure that calorie and protein calculations, goal progress percentages, and remaining calorie computations are accurate and reliable, independent of the user interface.
 
 All tests in this group are pure logic tests, meaning:
-No widgets are rendered
-No Flutter UI dependencies are involved
-The tests execute quickly and deterministically
+- No widgets are rendered
+- No Flutter UI dependencies are involved
+- The tests execute quickly and deterministically
 
 This approach improves maintainability and allows early detection of logical errors.
 Test Group: MealLog Provider Logic Tests
