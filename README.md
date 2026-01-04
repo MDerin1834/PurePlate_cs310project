@@ -356,37 +356,135 @@ flutter run
 ### Running All Tests
 flutter test
 
-## Testing Overview
+This project includes both unit tests and widget tests to verify the correctness of core application logic and ensure that the Flutter UI renders as expected. The tests are written using Flutter’s built-in flutter_test framework and follow best practices by separating business logic validation from UI rendering verification.
 
-This project includes both unit tests and a widget test to verify core application behavior.
+### 1. Unit Tests – MealLog Provider Logic
+Purpose
+The unit tests focus on validating the numerical logic used in daily nutrition tracking. These tests ensure that calorie and protein calculations, goal progress percentages, and remaining calorie computations are accurate and reliable, independent of the user interface.
 
-### Unit Tests – MealLogProvider
+All tests in this group are pure logic tests, meaning:
+No widgets are rendered
+No Flutter UI dependencies are involved
+The tests execute quickly and deterministically
 
-The unit tests focus on the business logic and state management of MealLogProvider by mocking external dependencies (AuthProvider and MealService).
-They cover:
-1. Initial state validation: 
-Ensures the provider starts with an empty meal list and is not loading when no user is logged in.
-2. Meal loading behavior
-Verifies that meals are correctly loaded from a stream when a user exists and that the loading state updates properly.
-3. Daily nutrition calculations
-Confirms that todayCalories and todayProtein only count meals logged on the current day.
+This approach improves maintainability and allows early detection of logical errors.
+Test Group: MealLog Provider Logic Tests
+The tests are grouped using group() to clearly indicate that they belong to the same logical component of the system.
 
-Service interaction methods
-Ensures that:
-1. logMeal calls MealService.addMeal
-2. updateMeal calls MealService.updateMeal
-3. deleteMeal calls MealService.deleteMeal with the correct user ID and parameters.
+#### 1.1 Calorie Calculation Logic Test
 
-All external services are mocked to keep the tests isolated and deterministic.
+Objective:
+To verify that total daily calories are correctly calculated by summing individual meal values.
 
-### Widget Test – Smoke Test
+Logic Tested:
+Three meal calorie values are defined
+The total calorie count is computed via simple addition
+The result is compared against the expected total
 
-The widget test verifies that the main application UI builds correctly and basic user interaction works.
-It covers:
-1. Successful rendering of the app (MyApp)
-2. Correct initial UI state
-3. UI update after a button tap (counter increment)
-4. This serves as a basic smoke test to ensure the app launches and responds to user interaction.
+Why this matters:
+Daily calorie tracking is a core feature of the application. Incorrect calculations could mislead users and compromise the app’s reliability.
+
+Expected Outcome:
+The sum of 500, 300, and 200 calories equals 1000 calories, which the test confirms.
+
+#### 1.2 Protein Calculation Logic Test
+
+Objective:
+To ensure that daily protein intake is computed correctly across multiple meals.
+
+Logic Tested:
+Protein values from three meals are aggregated
+The final total is validated against the expected value
+
+Why this matters:
+Protein intake tracking is crucial for dietary planning, especially for users with fitness or health goals.
+
+Expected Outcome:
+The sum of 40 g, 20 g, and 15 g equals 75 grams of protein, which the test successfully validates.
+
+#### 1.3 Daily Goal Percentage Calculation Test
+
+Objective:
+To verify that progress toward a daily calorie goal is calculated as a percentage.
+
+Logic Tested:
+The consumed calorie count is divided by the target value
+The result is multiplied by 100 and rounded to the nearest integer
+
+Why this matters:
+Percentage-based progress indicators are commonly displayed in the UI. Errors here would directly affect user feedback and motivation.
+
+Expected Outcome:
+Consuming 1500 out of 2000 calories correctly results in 75% progress.
+
+#### 1.4 Remaining Calories Calculation Test
+
+Objective:
+To confirm that the application correctly computes how many calories remain for the day.
+
+Logic Tested:
+Consumed calories are subtracted from the daily target
+The result is checked for correctness and validity
+
+Additional Validation:
+The test also asserts that the remaining calorie count is greater than zero, ensuring logical consistency.
+
+Why this matters:
+Negative remaining calories would indicate faulty logic and could lead to incorrect UI states or warnings.
+
+Expected Outcome:
+With a target of 2000 calories and 1200 consumed, the remaining calories correctly equal 800.
+
+### 2. Widget Tests – UI Rendering and Theme Verification
+Purpose
+
+Widget tests ensure that the Flutter UI:
+Renders correctly
+Applies themes properly
+Displays expected text and components
+These tests simulate a lightweight UI environment without running the full application.
+
+#### 2.1 App Smoke Test – MaterialApp Rendering
+
+Objective:
+To verify that the core application structure renders successfully.
+
+What is tested:
+A minimal MaterialApp is built
+The presence of a Scaffold and a Text widget is validated
+The existence of the MaterialApp widget itself is confirmed
+
+Why this matters:
+This is a classic smoke test, ensuring that the app can render without runtime errors. It serves as an early warning system for configuration or dependency issues.
+
+Expected Outcome:
+The text “PurePlate” and the MaterialApp widget both appear exactly once in the widget tree.
+
+#### 2.2 Theme Application Test
+
+Objective:
+To ensure that theming and UI components work correctly together.
+
+What is tested:
+A custom theme with a green primary color is applied
+An AppBar and body content are rendered
+Text widgets and structural elements appear as expected
+
+Why this matters:
+Correct theme application is essential for visual consistency and branding. This test ensures that theming does not break widget rendering.
+
+Expected Outcome:
+
+The AppBar title (“Test”) is visible
+The body text (“Content”) renders correctly
+The AppBar widget is present in the widget tree
+
+### 3. Testing Strategy Summary
+
+Unit tests validate core nutritional calculations independently of the UI
+Widget tests ensure that the application renders correctly and applies themes as intended
+Tests are lightweight, fast, and deterministic
+Logical separation between business logic and UI improves scalability and maintainability
 
 ## Future Work
 
